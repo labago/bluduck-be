@@ -28,19 +28,18 @@ services:
       - 80:80
 
   db:
-    image: mariadb:10
+    image: postgres
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
     environment:
-      MYSQL_DATABASE: nest
-      MYSQL_USER: nest
-      MYSQL_PASSWORD: nest
-      MYSQL_ROOT_PASSWORD: root
+      DATABASE: bluduck
+      USER: postgres
+      PASSWORD: password
     volumes:
-      - mariadbdata:/var/lib/mysql
+      - postgresqldata:/var/lib/postgres
 
 volumes:
-  mariadbdata:
+  postgresqldata:
 

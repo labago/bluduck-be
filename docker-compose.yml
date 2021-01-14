@@ -5,6 +5,8 @@ services:
     container_name: nest
     depends_on:
       - db
+    environment:
+      DATABASE_URL: postgres://postgres:password@db/bluduck-db
     volumes:
       - ./src:/app/src
       - .env:/app/.env
@@ -25,17 +27,16 @@ services:
       - 80:80
 
   db:
-    image: mariadb:10
-    container_name: nest-db
+    image: postgres
+    container_name: bluduck-db
     environment:
-      MYSQL_DATABASE: nest
-      MYSQL_USER: nest
-      MYSQL_PASSWORD: nest
-      MYSQL_ROOT_PASSWORD: root
+      POSTGRES_DB: bluduck-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: hu8jmn3
     ports:
-      - 3306:3306
+      - 5432:5432
     volumes:
-      - mariadbdata:/var/lib/mysql
+      - postgresqldata:/var/lib/postgres
 
 volumes:
-  mariadbdata:
+  postgresqldata:
