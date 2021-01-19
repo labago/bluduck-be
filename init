@@ -27,6 +27,32 @@ if ! type "docker-compose" > /dev/null 2>&1; then
 fi
 log "Looks like both docker and docker-compose are installed, everything looks good."
 
+# stop all running containers
+echo '####################################################'
+echo 'Stopping running containers (if available)...'
+echo '####################################################'
+docker stop $(docker ps -aq)
+
+# remove all stopped containers
+echo '####################################################'
+echo 'Removing containers ..'
+echo '####################################################'
+docker rm $(docker ps -aq)
+
+
+# remove all images
+echo '####################################################'
+echo 'Removing images ...'
+echo '####################################################'
+docker rmi $(docker images -q)
+
+# remove all stray volumes if any
+# echo '####################################################'
+# echo 'Revoming docker container volumes (if any)'
+# echo '####################################################'
+#docker volume rm $(docker volume ls -q)
+
+
 log "Copying .env.example -> .env"
 cp .env.example .env
 if [ $? -ne 0 ]; then

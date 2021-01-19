@@ -1,8 +1,8 @@
 {
-  "name": "bluduck-api",
+  "name": "nest-boilerplate",
   "version": "1.0.0",
-  "description": "BluDuck API",
-  "author": "Moga Digital",
+  "description": "VivifyIdeas Nest Boilerplate",
+  "author": "Nikola Spalevic",
   "license": "MIT",
   "scripts": {
     "format": "prettier --write \"src/**/*.ts\"",

@@ -5,8 +5,6 @@ services:
     container_name: nest
     depends_on:
       - db
-    environment:
-      DATABASE_URL: postgres://postgres:password@db/bluduck-db
     volumes:
       - ./src:/app/src
       - .env:/app/.env
@@ -30,13 +28,13 @@ services:
     image: postgres
     container_name: bluduck-db
     environment:
-      POSTGRES_DB: bluduck-db
+      POSTGRES_DB: bluduck
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: hu8jmn3
+      POSTGRES_PASSWORD: password
     ports:
       - 5432:5432
     volumes:
-      - postgresqldata:/var/lib/postgres
+      - postgresdata:/var/lib/postgres/data
 
 volumes:
-  postgresqldata:
+  postgresdata:
