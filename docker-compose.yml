@@ -1,8 +1,0 @@
-version: "2"
-services:
-  nest:
-    build: .
-    container_name: nest
-    volumes:
-      - ./src:/app/src
-      - .env:/app/.env
