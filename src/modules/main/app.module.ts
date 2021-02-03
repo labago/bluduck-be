@@ -14,11 +14,11 @@ import { CompanyModule } from './../company/company.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         return {
-          type: process.env.APP_ENV || configService.get('DB_TYPE'),
-          host: process.env.APP_ENV || configService.get('DB_HOST'),
-          port: process.env.APP_ENV || configService.get('DB_PORT'),
-          username: process.env.APP_ENV || configService.get('DB_USERNAME'),
-          password: process.env.APP_ENV || configService.get('DB_PASSWORD'),
+          type: process.env.DB_TYPE || configService.get('DB_TYPE'),
+          host: process.env.DB_HOST || configService.get('DB_HOST'),
+          port: process.env.DB_PORT || configService.get('DB_PORT'),
+          username: process.env.DB_USERNAME || configService.get('DB_USERNAME'),
+          password: process.env.DB_PASSWORD || configService.get('DB_PASSWORD'),
           database: process.env.DB_DATABASE || configService.get('DB_DATABASE'),
           entities: [__dirname + './../**/**.entity{.ts,.js}'],
           synchronize: process.env.APP_ENV || configService.isEnv('dev'),
@@ -30,7 +30,6 @@ import { CompanyModule } from './../company/company.module';
     UserModule,
     CompanyModule
   ],
-  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
