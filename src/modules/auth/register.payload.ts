@@ -12,18 +12,6 @@ export class RegisterPayload {
     required: true,
   })
   @IsNotEmpty()
-  firstName: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsNotEmpty()
-  lastName: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsNotEmpty()
   @MinLength(5)
   password: string;
 }

@@ -1,10 +1,11 @@
-import * as crypto from 'crypto';
+import { Hash } from '../../utils/Hash';
 import { ValueTransformer } from 'typeorm';
 
 export class PasswordTransformer implements ValueTransformer {
   to(value) {
-    return crypto.createHmac('sha256', value).digest('hex');
+    return Hash.make(value);
   }
+
   from(value) {
     return value;
   }

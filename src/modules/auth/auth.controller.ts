@@ -9,14 +9,14 @@ import {
 import { ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService, LoginPayload, RegisterPayload } from './';
-import { UsersService } from './../user';
+import { UserService } from './../user/user.service';
 
 @Controller('api/auth')
 @ApiTags('authentication')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UsersService,
+    private readonly userService: UserService,
   ) {}
 
   @Post('login')

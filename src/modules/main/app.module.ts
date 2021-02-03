@@ -3,7 +3,9 @@ import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from './../config';
-import { AuthModule } from './../auth';
+import { AuthModule } from './../auth/auth.module';
+import { UserModule } from './../user/user.module';
+import { CompanyModule } from './../company/company.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { AuthModule } from './../auth';
     }),
     ConfigModule,
     AuthModule,
+    UserModule,
+    CompanyModule
   ],
   controllers: [AppController],
   providers: [AppService],
