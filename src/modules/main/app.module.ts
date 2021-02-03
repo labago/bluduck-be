@@ -14,14 +14,14 @@ import { CompanyModule } from './../company/company.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         return {
-          type: configService.get('DB_TYPE'),
-          host: configService.get('DB_HOST'),
-          port: configService.get('DB_PORT'),
-          username: configService.get('DB_USERNAME'),
-          password: configService.get('DB_PASSWORD'),
-          database: configService.get('DB_DATABASE'),
+          type: process.env.APP_ENV || configService.get('DB_TYPE'),
+          host: process.env.APP_ENV || configService.get('DB_HOST'),
+          port: process.env.APP_ENV || configService.get('DB_PORT'),
+          username: process.env.APP_ENV || configService.get('DB_USERNAME'),
+          password: process.env.APP_ENV || configService.get('DB_PASSWORD'),
+          database: process.env.DB_DATABASE || configService.get('DB_DATABASE'),
           entities: [__dirname + './../**/**.entity{.ts,.js}'],
-          synchronize: configService.isEnv('dev'),
+          synchronize: process.env.APP_ENV || configService.isEnv('dev'),
         } as TypeOrmModuleAsyncOptions;
       },
     }),
