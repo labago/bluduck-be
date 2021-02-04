@@ -12,7 +12,7 @@ export class Company {
   @Column({ length: 255 })
   companyName: string;
 
-  @ManyToOne(type => User, user => user.companies)
+  @ManyToOne(type => User, user => user.companies, { onDelete: 'CASCADE' })
   owner?: User;
 
   @CreateDateColumn({ nullable: true, type: 'timestamp', default: () => "CURRENT_TIMESTAMP(6)" })

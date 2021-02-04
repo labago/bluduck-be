@@ -14,7 +14,10 @@ export class UserService {
   ) {}
 
   async get(id: number) {
-    return this.userRepository.findOne(id);
+    return this.userRepository.findOne({
+      where: { id },
+      relations: ['companies']
+    });
   }
 
   async getByEmail(email: string) {
@@ -39,7 +42,7 @@ export class UserService {
     const user = await this.getByEmail(payload.email);
 
     if (user) {
-      throw new NotAcceptableException(
+    throw new NotAcceptableException(
         'User with provided email already exists.',
       );
     }

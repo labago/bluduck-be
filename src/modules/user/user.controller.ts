@@ -21,8 +21,18 @@ export class UserController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
+  @Get()
+  @ApiResponse({ status: 201, description: 'Successfully retrieved user.' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async userGet(@Request() req): Promise<any> {   
+    return await this.userService.get(req.user.id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
   @Patch()
-  @ApiResponse({ status: 201, description: 'Successfully updated user' })
+  @ApiResponse({ status: 201, description: 'Successfully updated user.' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async userPatch(@Request() req, @Body() payload: UserPatchDto): Promise<any> {

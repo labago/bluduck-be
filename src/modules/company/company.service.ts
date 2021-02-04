@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -16,14 +16,15 @@ export class CompanyService {
     private readonly userService: UserService
   ) {}
 
-  async get(id: number) {
+  async get(id: number): Promise<any> {
     return this.companyRepository.findOne(id);
   }
 
-  // async getAllTodo(): Promise<TodoDto[]> {
-  //   const todos = await this.todoRepo.find({ relations: ['tasks', 'owner'] });
-  //   return todos.map(todo => toTodoDto(todo));
-  // }
+  async getAllCompaniesForOwner({ id }: UserDto): Promise<any> {
+    return await this.companyRepository.find({
+      where: { owner: id }
+    });
+  }
 
   async create({ id }: UserDto, payload: CompanyCreateDto): Promise<any> {
     const { companyName } = payload;
@@ -40,16 +41,31 @@ export class CompanyService {
       }));
   }
 
-  // async patch(payload: UserFillableFields) {
-  //   return this.getByEmail(payload.email);
-  //   const user = await this.getByEmail(payload.email);
+  async patch(req: any, payload: CompanyDto): Promise<any> {
+    const company = await this.companyRepository
+                              .createQueryBuilder('company')
+                              .leftJoinAndSelect('company.owner', 'owner')
+                              .where('company.id = :id')
+                              .setParameter('id', payload.id)
+                              .getOne();
+    if (company.owner.id !== req.user.id) {
+      throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis company.'); 
+    }
+    await this.companyRepository.update({ id: payload.id }, payload);
+    return await this.get(payload.id);
+  }
 
-  //   if (user) {
-  //     throw new NotAcceptableException(
-  //       'User with provided email already created.',
-  //     );
-  //   }
-
-  //   return await this.userRepository.save(this.userRepository.create(payload));
-  // }
+  async delete(req: any, id: number): Promise<any> {
+    const company = await this.companyRepository
+                              .createQueryBuilder('company')
+                              .leftJoinAndSelect('company.owner', 'owner')
+                              .where('company.id = :id')
+                              .setParameter('id', id)
+                              .getOne();
+    if (company.owner.id !== req.user.id) {
+      throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis company.'); 
+    }
+    await this.companyRepository.delete({ id });
+    return company;
+  }
 }
