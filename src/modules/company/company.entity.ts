@@ -15,7 +15,7 @@ export class Company {
   @ManyToOne(type => User, user => user.companies, { onDelete: 'CASCADE' })
   owner?: User;
 
-  @OneToMany(type => Project, project => project.company, { onDelete: 'CASCADE' })
+  @OneToMany(type => Project, project => project.company)
   projects?: Project[];  
   
   @CreateDateColumn({ nullable: true, type: 'timestamp', default: () => "CURRENT_TIMESTAMP(6)" })
