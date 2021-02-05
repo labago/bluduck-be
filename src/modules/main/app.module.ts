@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from './../config';
 import { AuthModule } from './../auth/auth.module';
 import { UserModule } from './../user/user.module';
 import { CompanyModule } from './../company/company.module';
+import { ProjectModule } from './../project/project.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { CompanyModule } from './../company/company.module';
     ConfigModule,
     AuthModule,
     UserModule,
-    CompanyModule
+    CompanyModule,
+    ProjectModule
   ],
   providers: [AppService],
 })
