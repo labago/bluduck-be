@@ -1,13 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { UserDto } from "modules/user/dto/user.dto";
 
-export class CompanyCreateDto {
+export class ProjectCreateDto {
     @ApiProperty({
-        required: true,
-      })
+      required: true,
+    })
     @IsNotEmpty()
-    companyName: string;
-    
-    owner?: UserDto;
+    projectName: string;
+
+    @ApiProperty({
+      required: true,
+    })
+    @IsNotEmpty()
+    dueDate: Date;
+
+    @ApiProperty({
+      required: true,
+    })
+    @IsNotEmpty()
+    latestUpdate: Date
+
+    @ApiProperty({
+      required: true,
+    })
+    @IsNotEmpty()
+    companyId: number;
 }

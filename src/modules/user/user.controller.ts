@@ -4,7 +4,8 @@ import {
   Patch,
   Get,
   UseGuards,
-  Request
+  Request,
+  Param
 } from '@nestjs/common';
 import { ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -31,14 +32,13 @@ export class UserController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
-  @Patch()
+  @Patch(':id')
   @ApiResponse({ status: 201, description: 'Successfully updated user.' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async userPatch(@Request() req, @Body() payload: UserPatchDto): Promise<any> {
-    const thisUser = await this.userService.get(req.user.id);
-    if (thisUser.email !== payload.email) {
-      throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis profile'); 
+  async userPatch(@Request() req, @Param('id') id: number, @Body() payload: UserPatchDto): Promise<any> {
+    if (req.user.id !== id) {
+      throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis profile');
     }
     return await this.userService.patch(payload);
   }

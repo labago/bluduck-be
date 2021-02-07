@@ -13,7 +13,7 @@ export class Company {
   companyName: string;
 
   @ManyToOne(type => User, user => user.companies, { onDelete: 'CASCADE' })
-  owner?: User;
+  owner: User;
 
   @OneToMany(type => Project, project => project.company)
   projects?: Project[];  

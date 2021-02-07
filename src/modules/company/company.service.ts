@@ -7,6 +7,7 @@ import { CompanyDto } from './dto/company.dto';
 import { UserDto } from '../user/dto'
 import { UserService } from '../user/user.service';
 import { CompanyCreateDto } from './dto/company.create.dto';
+import { CompanyPatchDto } from './dto/company.patch.dto';
 
 @Injectable()
 export class CompanyService {
@@ -16,11 +17,16 @@ export class CompanyService {
     private readonly userService: UserService
   ) {}
 
-  async get(id: number): Promise<any> {
-    return this.companyRepository.findOne(id);
+  async get(id: number): Promise<Company> {
+    return await this.companyRepository
+                      .createQueryBuilder('company')
+                      .leftJoinAndSelect('company.owner', 'owner')
+                      .where('company.id = :id')
+                      .setParameter('id', id)
+                      .getOne();
   }
 
-  async getAllCompaniesForOwner({ id }: UserDto): Promise<any> {
+  async getAllCompaniesForOwner({ id }: UserDto): Promise<CompanyDto[]> {
     return await this.companyRepository.find({
       where: { owner: id }
     });
@@ -41,7 +47,7 @@ export class CompanyService {
       }));
   }
 
-  async patch(req: any, payload: CompanyDto): Promise<any> {
+  async patch(req: any, payload: CompanyPatchDto): Promise<any> {
     const company = await this.companyRepository
                               .createQueryBuilder('company')
                               .leftJoinAndSelect('company.owner', 'owner')

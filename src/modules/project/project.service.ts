@@ -1,41 +1,41 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, SimpleConsoleLogger } from 'typeorm';
 
 import { Project } from './project.entity';
-import { UserDto } from '../user/dto'
-import { CompanyCreateDto } from './dto/project.create.dto';
+import { ProjectCreateDto } from './dto/project.create.dto';
+import { CompanyService } from 'modules/company';
+import { ProjectDto } from './dto';
 
 @Injectable()
 export class ProjectService {
   constructor(
     @InjectRepository(Project)
-    private readonly projectRepository: Repository<Project>
+    private readonly projectRepository: Repository<Project>,
+    private readonly companyService: CompanyService
   ) {}
 
-  async get(id: number): Promise<any> {
-    return this.projectRepository.findOne(id);
+  async getProjectsByCompany(userId: number, companyId: number): Promise<Project[]> {
+    const company = await this.companyService.get(companyId);
+    if (userId !== company.owner.id) {
+      throw new NotFoundException('Only owner of company can retrieve projects.');
+    }
+    return this.projectRepository.find({ where: { companyId }});
   }
 
-  async getAllCompaniesForOwner({ id }: UserDto): Promise<any> {
-    return await this.projectRepository.find({
-      where: { owner: id }
-    });
-  }
+  // async getAllProjects({ id }: UserDto): Promise<any> {
+  //   return await this.projectRepository.find({
+  //     where: { owner: id }
+  //   });
+  // }
 
-  async create({ id }: UserDto, payload: CompanyCreateDto): Promise<any> {
-    // const { companyName } = payload;
-    // const owner = await this.userService.get(id);
-    // if (!owner) {
-    //   throw new NotFoundException(
-    //     'User not found. Could not create company. Beep boop.',
-    //   );
-    // }
-    // return await this.projectRepository.save(
-    //   this.projectRepository.create({
-    //     companyName,
-    //     owner
-    //   }));
+  async create(userId: number, payload: ProjectCreateDto): Promise<Project> {
+    console.log(payload);
+    const company = await this.companyService.get(payload.companyId);
+    if (company.owner.id !== userId) {
+      throw new NotFoundException('Only owner of company can create projects.');
+    }
+    return await this.projectRepository.save(this.projectRepository.create(payload));
   }
 
   // async patch(req: any, payload: CompanyDto): Promise<any> {

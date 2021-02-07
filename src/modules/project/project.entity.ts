@@ -1,5 +1,5 @@
 import { IsDate } from 'class-validator';
-import { Company } from 'modules/company';
+import { Company } from '../company/company.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne } from 'typeorm';
 
 @Entity({
@@ -21,7 +21,7 @@ export class Project {
   latestUpdate: Date;
 
   @ManyToOne(type => Company, company => company.projects, { onDelete: 'CASCADE' })
-  company?: Company;
+  company: Company;
 
   @CreateDateColumn({ nullable: true, type: 'timestamp', default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: Date;

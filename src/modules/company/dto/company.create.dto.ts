@@ -8,6 +8,4 @@ export class CompanyCreateDto {
       })
     @IsNotEmpty()
     companyName: string;
-    
-    owner?: UserDto;
 }

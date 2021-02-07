@@ -13,56 +13,55 @@ import { ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { ProjectService } from './project.service';
 import { UserDto } from '../user/dto';
-import { CompanyCreateDto } from './dto/project.create.dto';
-import { CompanyDto } from './dto/project.dto';
+import { ProjectCreateDto } from './dto/project.create.dto';
 
-@Controller('api/company')
-@ApiTags('company')
+@Controller('api/project')
+@ApiTags('project')
 export class ProjectController {
   constructor(
-    private readonly companyService: ProjectService
+    private readonly projectService: ProjectService
   ) {}
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
-  @Get()
-  @ApiResponse({ status: 201, description: 'Successfully retrieved companies.' })
+  @Get('company/:id')
+  @ApiResponse({ status: 201, description: 'Successfully retrieved projects.' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async get(@Request() req: any): Promise<any> {
-    const user = req.user as UserDto;
-    return await this.companyService.getAllCompaniesForOwner(user);
+  async get(@Param('id') companyId: number, @Request() req: any): Promise<any> {
+    const { id } = req.user;
+    return await this.projectService.getProjectsByCompany(id, companyId);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Post()
-  @ApiResponse({ status: 201, description: 'Successfully added company.' })
+  @ApiResponse({ status: 201, description: 'Successfully added project.' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async create(@Request() req: any, @Body() payload: CompanyCreateDto): Promise<any> {
-    const user = req.user as UserDto;
-    return await this.companyService.create(user, payload);
+  async create(@Request() req: any, @Body() payload: ProjectCreateDto): Promise<any> {
+    const { id } = req.user;
+    return await this.projectService.create(id, payload);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
-  @Patch()
-  @ApiResponse({ status: 201, description: 'Successfully updated company.' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async patch(@Request() req, @Body() payload: CompanyDto): Promise<any> {
-    return await this.companyService.patch(req, payload);
-  }
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard())
+  // @Patch()
+  // @ApiResponse({ status: 201, description: 'Successfully updated company.' })
+  // @ApiResponse({ status: 400, description: 'Bad Request' })
+  // @ApiResponse({ status: 401, description: 'Unauthorized' })
+  // async patch(@Request() req, @Body() payload: CompanyDto): Promise<any> {
+  //   return await this.companyService.patch(req, payload);
+  // }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
-  @Delete(':id')
-  @ApiResponse({ status: 201, description: 'Successfully deleted company.' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async delete(@Request() req, @Param('id') id: number): Promise<any> {
-    return await this.companyService.delete(req, id);
-  }
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard())
+  // @Delete(':id')
+  // @ApiResponse({ status: 201, description: 'Successfully deleted company.' })
+  // @ApiResponse({ status: 400, description: 'Bad Request' })
+  // @ApiResponse({ status: 401, description: 'Unauthorized' })
+  // async delete(@Request() req, @Param('id') id: number): Promise<any> {
+  //   return await this.companyService.delete(req, id);
+  // }
 }
   

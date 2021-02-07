@@ -22,7 +22,7 @@ export class User {
   @Column({nullable: true, length: 255 })
   phoneNumber: string;
 
-  @Column({ nullable: true, length: 255 })
+  @Column({ nullable: true, length: 255, default: "#000000"  })
   avatarColor: string;
 
   @Column({ nullable: true, length: 255 })

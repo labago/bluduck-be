@@ -1,30 +1,48 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserPatchDto {
-    @ApiProperty()
+    @ApiProperty({ 
+        required: false
+    })
     email: string;
 
-    @ApiProperty()
+    @ApiProperty({ 
+        required: false
+    })
     firstName: string;
 
-    @ApiProperty()
+    @ApiProperty({ 
+        required: false
+    })
     lastName: string;
 
-    @ApiProperty()
+    @ApiProperty({ 
+        required: false
+    })
     phoneNumber: string;
 
-    @ApiProperty()
+    @ApiProperty({ 
+        required: false
+    })
     avatarColor: string;
 
-    @ApiProperty()
+    @ApiProperty({ 
+        required: false
+    })
     role: string;
 
-    @ApiProperty()
+    @ApiProperty({ 
+        required: false
+    })
     companyLimit: number;
     
-    @ApiProperty()
+    @ApiProperty({ 
+        required: false
+    })
     projectLimit: number;
     
-    @ApiProperty()
+    @ApiProperty({ 
+        required: false
+    })
     taskLimit: number;    
 }

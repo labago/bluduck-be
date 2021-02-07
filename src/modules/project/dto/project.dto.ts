@@ -1,12 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { UserDto } from "modules/user/dto/user.dto";
+import { CompanyDto } from "modules/company/dto";
 
-export class CompanyDto {
-    @ApiProperty()
+export class ProjectDto {
     id: number;  
-
-    @ApiProperty()
-    companyName: string;
-
-    owner: UserDto;
+    projectName: string;
+    dueDate: Date;
+    latestUpdate?: Date;
+    companyId: CompanyDto;
 }

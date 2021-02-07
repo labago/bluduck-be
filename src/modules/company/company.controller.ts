@@ -15,6 +15,7 @@ import { CompanyService } from './company.service';
 import { UserDto } from '../user/dto';
 import { CompanyCreateDto } from './dto/company.create.dto';
 import { CompanyDto } from './dto/company.dto';
+import { CompanyPatchDto } from './dto/company.patch.dto';
 
 @Controller('api/company')
 @ApiTags('company')
@@ -51,7 +52,7 @@ export class CompanyController {
   @ApiResponse({ status: 201, description: 'Successfully updated company.' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async patch(@Request() req, @Body() payload: CompanyDto): Promise<any> {
+  async patch(@Request() req, @Body() payload: CompanyPatchDto): Promise<any> {
     return await this.companyService.patch(req, payload);
   }
 
