@@ -1,11 +1,10 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SimpleConsoleLogger } from 'typeorm';
-
+import { Repository } from 'typeorm';
 import { Project } from './project.entity';
 import { ProjectCreateDto } from './dto/project.create.dto';
 import { CompanyService } from '../company/company.service';
-import { ProjectDto } from './dto';
+import { ProjectDto } from './dto/project.dto';
 
 @Injectable()
 export class ProjectService {
@@ -15,27 +14,31 @@ export class ProjectService {
     private readonly companyService: CompanyService
   ) {}
 
-  async getProjectsByCompany(userId: number, companyId: number): Promise<Project[]> {
+  async getProjectsByCompany(userId: number, companyId: number): Promise<ProjectDto[]> {
     const company = await this.companyService.get(companyId);
     if (userId !== company.owner.id) {
       throw new NotFoundException('Only owner of company can retrieve projects.');
     }
-    return this.projectRepository.find({ where: { companyId }});
+    return this.projectRepository.createQueryBuilder('project')
+                              .leftJoin('project.company', 'company')
+                              .where('project.companyId = :id')
+                              .setParameter('id', companyId)
+                              .getMany();
   }
 
-  // async getAllProjects({ id }: UserDto): Promise<any> {
-  //   return await this.projectRepository.find({
-  //     where: { owner: id }
-  //   });
-  // }
-
-  async create(userId: number, payload: ProjectCreateDto): Promise<Project> {
+  async create(userId: number, companyId: number, payload: ProjectCreateDto): Promise<Project> {
     console.log(payload);
-    const company = await this.companyService.get(payload.companyId);
+    const company = await this.companyService.get(companyId);
     if (company.owner.id !== userId) {
       throw new NotFoundException('Only owner of company can create projects.');
     }
-    return await this.projectRepository.save(this.projectRepository.create(payload));
+
+    return await this.projectRepository.save(this.projectRepository.create({
+      company,
+      projectName: payload.projectName,
+      dueDate: payload.dueDate,
+      latestUpdate: payload.latestUpdate
+    }));
   }
 
   // async patch(req: any, payload: CompanyDto): Promise<any> {

@@ -9,7 +9,7 @@ import {
   Request,
   Param
 } from '@nestjs/common';
-import { ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiResponse, ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { ProjectService } from './project.service';
 import { UserDto } from '../user/dto';
@@ -25,6 +25,7 @@ export class ProjectController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
   @Get('company/:id')
+  @ApiOperation({ summary: "Retrieve all projects under company <id>." })
   @ApiResponse({ status: 201, description: 'Successfully retrieved projects.' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
@@ -35,13 +36,14 @@ export class ProjectController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
-  @Post()
+  @Post('company/:id')
+  @ApiOperation({ summary: "Create a project under company <id>." })
   @ApiResponse({ status: 201, description: 'Successfully added project.' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async create(@Request() req: any, @Body() payload: ProjectCreateDto): Promise<any> {
+  async create(@Param('id') companyId, @Request() req: any, @Body() payload: ProjectCreateDto): Promise<any> {
     const { id } = req.user;
-    return await this.projectService.create(id, payload);
+    return await this.projectService.create(id, companyId, payload);
   }
 
   // @ApiBearerAuth()

@@ -5,5 +5,5 @@ export class ProjectDto {
     projectName: string;
     dueDate: Date;
     latestUpdate?: Date;
-    companyId: CompanyDto;
+    company: CompanyDto;
 }

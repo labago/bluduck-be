@@ -4,7 +4,7 @@ import { Company } from './company.entity';
 import { CompanyService } from './company.service';
 import { CompanyController } from './company.controller';
 import { AuthModule } from '../auth/auth.module';
-import { User, UserModule, UserService } from 'modules/user';
+import { UserModule } from '../user';
 
 @Module({
   imports: [

@@ -4,8 +4,8 @@ import { Project } from './project.entity';
 import { ProjectService } from './project.service';
 import { ProjectController } from './project.controller';
 import { AuthModule } from '../auth/auth.module';
-import { Company, CompanyModule, CompanyService } from 'modules/company';
-import { UserModule } from 'modules/user';
+import { CompanyModule } from '../company';
+import { UserModule } from '../user';
 
 @Module({
   imports: [

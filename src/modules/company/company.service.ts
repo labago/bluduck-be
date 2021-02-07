@@ -18,12 +18,10 @@ export class CompanyService {
   ) {}
 
   async get(id: number): Promise<Company> {
-    return await this.companyRepository
-                      .createQueryBuilder('company')
-                      .leftJoinAndSelect('company.owner', 'owner')
-                      .where('company.id = :id')
-                      .setParameter('id', id)
-                      .getOne();
+    return await this.companyRepository.findOne({
+      where: { id },
+      relations: ["owner", "projects"]
+    });
   }
 
   async getAllCompaniesForOwner({ id }: UserDto): Promise<CompanyDto[]> {
@@ -47,18 +45,18 @@ export class CompanyService {
       }));
   }
 
-  async patch(req: any, payload: CompanyPatchDto): Promise<any> {
+  async patch(req: any, companyId, payload: CompanyPatchDto): Promise<any> {
     const company = await this.companyRepository
                               .createQueryBuilder('company')
                               .leftJoinAndSelect('company.owner', 'owner')
                               .where('company.id = :id')
-                              .setParameter('id', payload.id)
+                              .setParameter('id', companyId)
                               .getOne();
     if (company.owner.id !== req.user.id) {
       throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis company.'); 
     }
-    await this.companyRepository.update({ id: payload.id }, payload);
-    return await this.get(payload.id);
+    await this.companyRepository.update({ id: companyId }, payload);
+    return await this.get(companyId);
   }
 
   async delete(req: any, id: number): Promise<any> {

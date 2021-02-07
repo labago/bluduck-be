@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+import { Company } from 'modules/company';
 
 export class ProjectCreateDto {
     @ApiProperty({
@@ -19,10 +20,4 @@ export class ProjectCreateDto {
     })
     @IsNotEmpty()
     latestUpdate: Date
-
-    @ApiProperty({
-      required: true,
-    })
-    @IsNotEmpty()
-    companyId: number;
 }
