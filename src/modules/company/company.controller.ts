@@ -18,13 +18,13 @@ import { CompanyPatchDto } from './dto/company.patch.dto';
 
 @Controller('api/company')
 @ApiTags('company')
+@ApiBearerAuth()
+@UseGuards(AuthGuard())
 export class CompanyController {
   constructor(
     private readonly companyService: CompanyService
   ) {}
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
   @Get()
   @ApiOperation({ summary: "Retrieve all companies owned by user." })
   @ApiResponse({ status: 201, description: 'Successfully retrieved companies.' })
@@ -35,8 +35,6 @@ export class CompanyController {
     return await this.companyService.getAllCompaniesForOwner(user);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
   @Post()
   @ApiOperation({ summary: "Create a company." })
   @ApiResponse({ status: 201, description: 'Successfully added company.' })
@@ -47,8 +45,7 @@ export class CompanyController {
     return await this.companyService.create(user, payload);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
+ 
   @Patch(':id')
   @ApiOperation({ summary: "Update company info under company <id>." })
   @ApiResponse({ status: 201, description: 'Successfully updated company.' })
@@ -58,8 +55,6 @@ export class CompanyController {
     return await this.companyService.patch(req, companyId, payload);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
   @Delete(':id')
   @ApiOperation({ summary: "Delete company <id>." })
   @ApiResponse({ status: 201, description: 'Successfully deleted company.' })

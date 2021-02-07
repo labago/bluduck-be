@@ -15,13 +15,13 @@ import { UnauthorizedException } from '@nestjs/common';
 
 @Controller('api/user')
 @ApiTags('user')
+@ApiBearerAuth()
+@UseGuards(AuthGuard())
 export class UserController {
   constructor(
     private readonly userService: UserService,
   ) {}
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
   @Get()
   @ApiResponse({ status: 201, description: 'Successfully retrieved user.' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
@@ -30,8 +30,7 @@ export class UserController {
     return await this.userService.get(req.user.id);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
+
   @Patch(':id')
   @ApiResponse({ status: 201, description: 'Successfully updated user.' })
   @ApiResponse({ status: 400, description: 'Bad Request' })

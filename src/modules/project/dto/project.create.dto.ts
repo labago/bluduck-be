@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { Company } from 'modules/company';
-
 export class ProjectCreateDto {
     @ApiProperty({
       required: true,

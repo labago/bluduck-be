@@ -5,6 +5,7 @@ import { Project } from './project.entity';
 import { ProjectCreateDto } from './dto/project.create.dto';
 import { CompanyService } from '../company/company.service';
 import { ProjectDto } from './dto/project.dto';
+import { ProjectPatchDto } from './dto/project.patch.dto';
 
 @Injectable()
 export class ProjectService {
@@ -13,6 +14,10 @@ export class ProjectService {
     private readonly projectRepository: Repository<Project>,
     private readonly companyService: CompanyService
   ) {}
+
+  async getProjectsById(id: number): Promise<ProjectDto> {
+    return await this.projectRepository.findOne(id);
+  }
 
   async getProjectsByCompany(userId: number, companyId: number): Promise<ProjectDto[]> {
     const company = await this.companyService.get(companyId);
@@ -41,31 +46,32 @@ export class ProjectService {
     }));
   }
 
-  // async patch(req: any, payload: CompanyDto): Promise<any> {
-  //   const company = await this.projectRepository
-  //                             .createQueryBuilder('company')
-  //                             .leftJoinAndSelect('company.owner', 'owner')
-  //                             .where('company.id = :id')
-  //                             .setParameter('id', payload.id)
-  //                             .getOne();
-  //   if (company.owner.id !== req.user.id) {
-  //     throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis company.'); 
-  //   }
-  //   await this.companyRepository.update({ id: payload.id }, payload);
-  //   return await this.get(payload.id);
-  // }
+  async patch(userId, projectId, payload: ProjectPatchDto): Promise<ProjectDto> {
+    const project = await this.projectRepository
+                              .createQueryBuilder('project')
+                              .leftJoinAndSelect('project.company', 'company')
+                              .leftJoinAndSelect('company.owner', 'owner')
+                              .where('project.id = :id')
+                              .setParameter('id', projectId)
+                              .getOne();                                                   
+    if (project.company.owner.id !== userId) {
+      throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis project.'); 
+    }
+    await this.projectRepository.update({ id: projectId }, payload);
+    return await this.getProjectsById(projectId);
+  }
 
-  // async delete(req: any, id: number): Promise<any> {
-  //   const company = await this.companyRepository
-  //                             .createQueryBuilder('company')
-  //                             .leftJoinAndSelect('company.owner', 'owner')
-  //                             .where('company.id = :id')
-  //                             .setParameter('id', id)
-  //                             .getOne();
-  //   if (company.owner.id !== req.user.id) {
-  //     throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis company.'); 
-  //   }
-  //   await this.companyRepository.delete({ id });
-  //   return company;
-  // }
+  async delete(userId: number, projectId: number): Promise<any> {
+    const project = await this.projectRepository
+                              .createQueryBuilder('project')
+                              .leftJoinAndSelect('project.company', 'company')
+                              .leftJoinAndSelect('company.owner', 'owner')
+                              .where('project.id = :id')
+                              .setParameter('id', projectId)
+                              .getOne();                                                   
+    if (project.company.owner.id !== userId) {
+      throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis project.'); 
+    }
+    return await this.projectRepository.delete(projectId);;
+  }
 }
