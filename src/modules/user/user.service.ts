@@ -50,17 +50,17 @@ export class UserService {
     return await this.userRepository.save(this.userRepository.create(payload));
   }
 
-  async patch(payload: UserPatchDto): Promise<User> {
-    const user = await this.getByEmail(payload.email);
+  async patch(userId: number, payload: UserPatchDto): Promise<User> {
+    const user = await this.get(userId);
     if (!user) {
       throw new NotFoundException(
-        'No user exists by this email.',
+        'No user exists.',
       );
     }
 
     const { id } = user;    
     await this.userRepository.update({ id }, payload);
-    const newUser = await this.getByEmail(payload.email);
+    const newUser = await this.get(id);
     return newUser;
   }
 }

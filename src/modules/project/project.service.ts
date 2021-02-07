@@ -4,7 +4,7 @@ import { Repository, SimpleConsoleLogger } from 'typeorm';
 
 import { Project } from './project.entity';
 import { ProjectCreateDto } from './dto/project.create.dto';
-import { CompanyService } from 'modules/company';
+import { CompanyService } from '../company/company.service';
 import { ProjectDto } from './dto';
 
 @Injectable()

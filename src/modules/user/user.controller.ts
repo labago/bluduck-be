@@ -36,11 +36,11 @@ export class UserController {
   @ApiResponse({ status: 201, description: 'Successfully updated user.' })
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async userPatch(@Request() req, @Param('id') id: number, @Body() payload: UserPatchDto): Promise<any> {
-    if (req.user.id !== id) {
+  async userPatch(@Request() req, @Param('id') id: any, @Body() payload: UserPatchDto): Promise<any> {
+    if (parseInt(req.user.id) !== parseInt(id)) {
       throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis profile');
     }
-    return await this.userService.patch(payload);
+    return await this.userService.patch(id, payload);
   }
 }
   
