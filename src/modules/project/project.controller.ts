@@ -19,6 +19,8 @@ import { ProjectPatchDto } from './dto/project.patch.dto';
 @ApiTags('project')
 @ApiBearerAuth()
 @UseGuards(AuthGuard())
+@ApiResponse({ status: 400, description: 'Bad Request' })
+@ApiResponse({ status: 401, description: 'Unauthorized' })
 export class ProjectController {
   constructor(
     private readonly projectService: ProjectService
@@ -27,8 +29,6 @@ export class ProjectController {
   @Get('company/:id')
   @ApiOperation({ summary: "Retrieve all projects under company <id>." })
   @ApiResponse({ status: 201, description: 'Successfully retrieved projects.' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async get(@Param('id') companyId: number, @Request() req: any): Promise<any> {
     const { id } = req.user;
     return await this.projectService.getProjectsByCompany(id, companyId);
@@ -37,8 +37,6 @@ export class ProjectController {
   @Post('company/:id')
   @ApiOperation({ summary: "Create a project under company <id>." })
   @ApiResponse({ status: 201, description: 'Successfully added project.' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async create(@Param('id') companyId, @Request() req: any, @Body() payload: ProjectCreateDto): Promise<any> {
     const { id } = req.user;
     return await this.projectService.create(id, companyId, payload);
@@ -47,8 +45,6 @@ export class ProjectController {
   @Patch(':id')
   @ApiOperation({ summary: "Update a project under project <id>." })
   @ApiResponse({ status: 201, description: 'Successfully updated project.' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async patch(@Param('id') projectId: number, 
               @Request() req, @Body() 
               payload: ProjectPatchDto): Promise<any> {
@@ -59,8 +55,6 @@ export class ProjectController {
   @Delete(':id')
   @ApiOperation({ summary: "Delete a project under project <id>." })
   @ApiResponse({ status: 201, description: 'Successfully deleted project.' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async delete(@Request() req, @Param('id') projectId: number): Promise<any> {
     const { id } = req.user;
     return await this.projectService.delete(id, projectId);

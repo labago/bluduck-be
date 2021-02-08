@@ -22,7 +22,7 @@ import { ProjectModule } from './../project/project.module';
           password: process.env.DB_PASSWORD || configService.get('DB_PASSWORD'),
           database: process.env.DB_DATABASE || configService.get('DB_DATABASE'),
           entities: [__dirname + './../**/**.entity{.ts,.js}'],
-          synchronize: process.env.APP_ENV || configService.isEnv('dev'),
+          synchronize: configService.isEnv('dev'),
         } as TypeOrmModuleAsyncOptions;
       },
     }),

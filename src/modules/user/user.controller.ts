@@ -17,6 +17,8 @@ import { UnauthorizedException } from '@nestjs/common';
 @ApiTags('user')
 @ApiBearerAuth()
 @UseGuards(AuthGuard())
+@ApiResponse({ status: 400, description: 'Bad Request' })
+@ApiResponse({ status: 401, description: 'Unauthorized' })
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -24,8 +26,6 @@ export class UserController {
 
   @Get()
   @ApiResponse({ status: 201, description: 'Successfully retrieved user.' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async userGet(@Request() req): Promise<any> {   
     return await this.userService.get(req.user.id);
   }
@@ -33,8 +33,6 @@ export class UserController {
 
   @Patch(':id')
   @ApiResponse({ status: 201, description: 'Successfully updated user.' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async userPatch(@Request() req, @Param('id') id: any, @Body() payload: UserPatchDto): Promise<any> {
     if (parseInt(req.user.id) !== parseInt(id)) {
       throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis profile');
