@@ -34,6 +34,9 @@ export class ProjectService {
         leftJoin: {
           company: 'project.company'
         }
+      },
+      where: {
+        company: companyId
       }
     });
   }
