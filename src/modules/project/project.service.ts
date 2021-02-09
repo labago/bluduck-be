@@ -26,8 +26,7 @@ export class ProjectService {
     }
     return this.projectRepository.createQueryBuilder('project')
                               .leftJoin('project.company', 'company')
-                              .where('project.companyId = :id')
-                              .setParameter('id', companyId)
+                              .where('project.companyId = :id', { id: companyId })
                               .getMany();
   }
 
