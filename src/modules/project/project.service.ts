@@ -24,10 +24,18 @@ export class ProjectService {
     if (userId !== company.owner.id) {
       throw new NotFoundException('Only owner of company can retrieve projects.');
     }
-    return this.projectRepository.createQueryBuilder('project')
-                              .leftJoin('project.company', 'company')
-                              .where('project.companyId = :id', { id: companyId })
-                              .getMany();
+    // return this.projectRepository.createQueryBuilder('project')
+    //                           .leftJoin('project.company', 'company')
+    //                           .where('project.companyId = :id', { id: companyId })
+    //                           .getMany();
+    return this.projectRepository.find({
+      join: {
+        alias: 'project',
+        leftJoin: {
+          company: 'project.company'
+        }
+      }
+    });
   }
 
   async create(userId: number, companyId: number, payload: ProjectCreateDto): Promise<Project> {
