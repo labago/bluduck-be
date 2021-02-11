@@ -15,6 +15,7 @@ import { CompanyService } from './company.service';
 import { UserDto } from '../user/dto';
 import { CompanyCreateDto } from './dto/company.create.dto';
 import { CompanyPatchDto } from './dto/company.patch.dto';
+import { Company } from './company.entity';
 
 @Controller('api/company')
 @ApiTags('company')
@@ -35,6 +36,14 @@ export class CompanyController {
     return await this.companyService.getAllCompaniesForOwner(user);
   }
 
+  @Get(':id')
+  @ApiOperation({ summary: "Retrieve a company by id owned by user." })
+  @ApiResponse({ status: 201, description: 'Successfully retrieved company.' })
+  async getById(@Param('id') companyId: number, @Request() req: any): Promise<any> {
+    const user = req.user as UserDto;
+    return await this.companyService.getCompanyWithProjects(companyId, user);
+  }
+
   @Post()
   @ApiOperation({ summary: "Create a company." })
   @ApiResponse({ status: 201, description: 'Successfully added company.' })
@@ -43,7 +52,6 @@ export class CompanyController {
     return await this.companyService.create(user, payload);
   }
 
- 
   @Patch(':id')
   @ApiOperation({ summary: "Update company info under company <id>." })
   @ApiResponse({ status: 201, description: 'Successfully updated company.' })

@@ -24,6 +24,24 @@ export class CompanyService {
     });
   }
 
+  async getCompanyWithProjects(companyId: number, user: UserDto): Promise<Company> {
+    const company = await this.companyRepository
+                              .createQueryBuilder('company')
+                              .leftJoinAndSelect('company.owner', 'owner')
+                              .where('company.id = :id')
+                              .setParameter('id', companyId)
+                              .getOne();
+    console.log(company);
+    if (company.owner.id !== user.id) {
+      throw new UnauthorizedException('Must be owner to view projects of company.'); 
+    }
+    return await this.companyRepository.findOne({
+      where: { id: companyId },
+      relations: ["projects"]
+    });
+  }
+
+
   async getAllCompaniesForOwner({ id }: UserDto): Promise<CompanyDto[]> {
     return await this.companyRepository.find({
       where: { owner: id }
@@ -56,7 +74,7 @@ export class CompanyService {
       throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis company.'); 
     }
     await this.companyRepository.update({ id: companyId }, payload);
-    return await this.get(companyId);
+    return await this.companyRepository.findOne(companyId);
   }
 
   async delete(req: any, id: number): Promise<any> {
