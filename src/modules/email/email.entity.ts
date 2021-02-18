@@ -1,8 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, BeforeInsert } from 'typeorm';
 
-import { Company } from '../company/company.entity';
-
 @Entity({
   name: 'email',
 })

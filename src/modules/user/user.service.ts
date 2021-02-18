@@ -1,4 +1,3 @@
-import * as crypto from 'crypto';
 import { Injectable, NotFoundException, NotAcceptableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -25,16 +24,6 @@ export class UserService {
       .createQueryBuilder('users')
       .where('users.email = :email')
       .setParameter('email', email)
-      .getOne();
-  }
-
-  async getByEmailAndPass(email: string, password: string) {
-    const passHash = crypto.createHmac('sha256', password).digest('hex');
-    return await this.userRepository
-      .createQueryBuilder('users')
-      .where('users.email = :email and users.password = :password')
-      .setParameter('email', email)
-      .setParameter('password', passHash)
       .getOne();
   }
 

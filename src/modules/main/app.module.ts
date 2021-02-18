@@ -7,6 +7,7 @@ import { AuthModule } from './../auth/auth.module';
 import { UserModule } from './../user/user.module';
 import { CompanyModule } from './../company/company.module';
 import { ProjectModule } from './../project/project.module';
+import { EmailModule } from 'modules/email/email.module';
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { ProjectModule } from './../project/project.module';
     AuthModule,
     UserModule,
     CompanyModule,
-    ProjectModule
+    ProjectModule,
+    EmailModule
   ],
   providers: [AppService],
 })
