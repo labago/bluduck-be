@@ -1,28 +1,28 @@
-// import {
-//   Controller,
-//   Body,
-//   Patch,
-//   Post,
-//   Get,
-//   Delete,
-//   UseGuards,
-//   Request,
-//   Param
-// } from '@nestjs/common';
-// import { ApiResponse, ApiTags, ApiBearerAuth, ApiOperation, ApiCreatedResponse } from '@nestjs/swagger';
-// import { AuthGuard } from '@nestjs/passport';
-// import { TaskService } from './task.service';
+import {
+  Controller,
+  Body,
+  Patch,
+  Post,
+  Get,
+  Delete,
+  UseGuards,
+  Request,
+  Param
+} from '@nestjs/common';
+import { ApiResponse, ApiTags, ApiBearerAuth, ApiOperation, ApiCreatedResponse } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { TaskService } from './task.service';
 
-// @Controller('api/project')
-// @ApiTags('project')
-// @ApiBearerAuth()
-// @UseGuards(AuthGuard())
-// @ApiResponse({ status: 400, description: 'Bad Request' })
-// @ApiResponse({ status: 401, description: 'Unauthorized' })
-// export class TaskController {
-//   constructor(
-//     private readonly taskService: TaskService
-//   ) {}
+@Controller('api/project')
+@ApiTags('project')
+@ApiBearerAuth()
+@UseGuards(AuthGuard())
+@ApiResponse({ status: 400, description: 'Bad Request' })
+@ApiResponse({ status: 401, description: 'Unauthorized' })
+export class TaskController {
+  constructor(
+    private readonly taskService: TaskService
+  ) {}
 
 //   @Get('company/:id')
 //   @ApiOperation({ summary: "Retrieve all projects under company <id>." })
@@ -57,5 +57,5 @@
 //     const { id } = req.user;
 //     return await this.taskService.delete(id, projectId);
 //   }
-// }
+}
   

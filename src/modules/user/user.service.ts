@@ -9,7 +9,7 @@ import { UserPatchDto, UserCredentialsDto } from './dto';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>
   ) {}
 
   async get(id: number) {

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CompanyService } from 'modules/company';
 import { Repository } from 'typeorm';
 import { TaskCreateDto, TaskDto } from './dto';
 import { Task } from './task.entity';
@@ -9,8 +8,7 @@ import { Task } from './task.entity';
 export class TaskService {
   constructor(
     @InjectRepository(Task)
-    private readonly taskRepository: Repository<Task>,
-    private readonly companyService: CompanyService;
+    private readonly taskRepository: Repository<Task>
   ) {}
 
   // async getTasksByProjectId(userId: number, projectId: number): Promise<TaskDto[]> {
