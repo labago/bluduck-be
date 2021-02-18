@@ -21,8 +21,8 @@ export class ProjectService {
 
   async getProjectsByCompany(userId: number, companyId: number): Promise<ProjectDto[]> {
     const company = await this.companyService.get(companyId);
-    if (userId !== company.owner.id) {
-      throw new NotFoundException('Only owner of company can retrieve projects.');
+    if (company.users.filter(user => user.id !== userId)) {
+      throw new NotFoundException('Must be a member of company to retrieve projects.');
     }
     return this.projectRepository.find({
       join: {

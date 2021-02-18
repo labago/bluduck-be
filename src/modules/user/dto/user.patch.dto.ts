@@ -34,6 +34,11 @@ export class UserPatchDto {
     @ApiProperty({ 
         required: false
     })
+    verified: boolean;
+
+    @ApiProperty({ 
+        required: false
+    })
     companyLimit: number;
     
     @ApiProperty({ 

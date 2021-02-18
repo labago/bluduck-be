@@ -1,6 +1,8 @@
 import { IsDate } from 'class-validator';
 import { Company } from '../company/company.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Task } from 'modules/tasks/task.entity';
+import { User } from 'modules/user';
 
 @Entity({
   name: 'project',
@@ -22,6 +24,11 @@ export class Project {
 
   @ManyToOne(type => Company, company => company.projects, { onDelete: 'CASCADE' })
   company: Company;
+
+  @OneToMany(type => Task, task => task.project)
+  tasks?: Task[];
+
+  users?: User[];
 
   @CreateDateColumn({ nullable: true, type: 'timestamp', default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: Date;

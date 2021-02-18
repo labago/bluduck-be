@@ -8,6 +8,7 @@ export class UserDto {
     phoneNumber: string;
     avatarColor: string;
     role: string;
+    verified: boolean;
     companyLimit: number;
     projectLimit: number;
     taskLimit: number;

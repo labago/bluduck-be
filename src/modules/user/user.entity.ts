@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, BeforeInsert } from 'typeorm';
 import { PasswordTransformer } from './password.transformer';
 import { Company } from '../company/company.entity';
 
@@ -27,6 +27,14 @@ export class User {
 
   @Column({ nullable: true, length: 255 })
   role: string;
+
+  @Column({ nullable: false})
+  verified: boolean;
+  
+  @BeforeInsert()
+  defaultVerifiedValue() {
+    this.verified = false;
+  }
 
   @Column({nullable: true})
   companyLimit: number;
