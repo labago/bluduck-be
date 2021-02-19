@@ -26,7 +26,7 @@ export class EmailService {
             pass: process.env.SMTP_PASS || this.configService.get('SMTP_PASS')
         }
       });
-    private host = this.configService.get('URL_HOST');
+    private host = process.env.URL_HOST || this.configService.get('URL_HOST');
 
     async sendVerificationEmail(recipient: UserDto): Promise<any> {
         try {
