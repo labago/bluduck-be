@@ -35,19 +35,4 @@ export class UserPatchDto {
         required: false
     })
     verified: boolean;
-
-    @ApiProperty({ 
-        required: false
-    })
-    companyLimit: number;
-    
-    @ApiProperty({ 
-        required: false
-    })
-    projectLimit: number;
-    
-    @ApiProperty({ 
-        required: false
-    })
-    taskLimit: number;    
 }

@@ -5,6 +5,8 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, Be
   name: 'email',
 })
 export class Email {
+  @PrimaryGeneratedColumn()
+  id: number;
   
   @Column({ length: 255 })
   hash: string;

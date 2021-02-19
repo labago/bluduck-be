@@ -45,7 +45,7 @@ export class CompanyController {
   }
 
   @Post()
-  @ApiOperation({ summary: "Create a company." })
+  @ApiOperation({ summary: "**ADMIN ONLY** Create a company." })
   @ApiResponse({ status: 201, description: 'Successfully added company.' })
   async create(@Request() req: any, @Body() payload: CompanyCreateDto): Promise<any> {
     const user = req.user as UserDto;
@@ -53,7 +53,7 @@ export class CompanyController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: "Update company info under company <id>." })
+  @ApiOperation({ summary: "**ADMIN ONLY** Update company info under company <id>." })
   @ApiResponse({ status: 201, description: 'Successfully updated company.' })
   async patch(@Param('id') companyId: number, @Request() req, @Body() payload: CompanyPatchDto): Promise<any> {
     return await this.companyService.patch(req, companyId, payload);

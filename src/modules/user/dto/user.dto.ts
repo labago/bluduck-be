@@ -9,8 +9,6 @@ export class UserDto {
     avatarColor: string;
     role: string;
     verified: boolean;
-    companyLimit: number;
-    projectLimit: number;
-    taskLimit: number;
     companies?: Company[];
+    isAdmin: boolean;
 }

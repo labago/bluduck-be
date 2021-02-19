@@ -18,8 +18,12 @@ export class Company {
   @OneToMany(type => Project, project => project.company)
   projects?: Project[];  
 
-  users?: User[];
-  
+  @Column({ nullable: true })
+  userLimit: number;
+
   @CreateDateColumn({ nullable: true, type: 'timestamp', default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: Date;
+
+  users?: User[];
+  
 }

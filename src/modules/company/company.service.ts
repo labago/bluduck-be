@@ -50,29 +50,40 @@ export class CompanyService {
 
   async create({ id }: UserDto, payload: CompanyCreateDto): Promise<any> {
     const { companyName } = payload;
-    const owner = await this.userService.get(id);
-    if (!owner) {
+    const user = await this.userService.get(id);
+    if (!user) {
       throw new NotFoundException(
         'User not found. Could not create company. Beep boop.',
       );
     }
+
+    if (!user.isAdmin) {
+      throw new NotFoundException(
+        'User must be admin to create company.',
+      );
+    }
+
+    const owner = await this.userService.get(payload.ownerId);
+    
     return await this.companyRepository.save(
       this.companyRepository.create({
         companyName,
-        owner
+        owner,
+        userLimit: payload.userLImit
       }));
   }
 
   async patch(req: any, companyId, payload: CompanyPatchDto): Promise<any> {
-    const company = await this.companyRepository
-                              .createQueryBuilder('company')
-                              .leftJoinAndSelect('company.owner', 'owner')
-                              .where('company.id = :id')
-                              .setParameter('id', companyId)
-                              .getOne();
-    if (company.owner.id !== req.user.id) {
-      throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis company.'); 
+    const user = await this.userService.get(req.user.id);
+    if (!user.isAdmin) {
+      throw new UnauthorizedException('Only admins may make changes to company.'); 
     }
+    // const company = await this.companyRepository
+    //                           .createQueryBuilder('company')
+    //                           .leftJoinAndSelect('company.owner', 'owner')
+    //                           .where('company.id = :id')
+    //                           .setParameter('id', companyId)
+    //                           .getOne();
     await this.companyRepository.update({ id: companyId }, payload);
     return await this.companyRepository.findOne(companyId);
   }

@@ -28,22 +28,13 @@ export class User {
   @Column({ nullable: true, length: 255 })
   role: string;
 
-  @Column({ nullable: false})
+  @Column({ nullable: true})
   verified: boolean;
   
   @BeforeInsert()
   defaultVerifiedValue() {
     this.verified = false;
   }
-
-  @Column({nullable: true})
-  companyLimit: number;
-  
-  @Column({nullable: true})
-  projectLimit: number;
-
-  @Column({nullable: true})
-  taskLimit: number;
 
   @Column({
     name: 'password',
@@ -58,6 +49,9 @@ export class User {
     const { password, ...self } = this;
     return self;
   }
+
+  @Column({nullable: false, default: false})
+  isAdmin: boolean;
 
   @OneToMany(type => Company, company => company.owner)
   companies: Company[];
