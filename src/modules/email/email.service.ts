@@ -18,12 +18,12 @@ export class EmailService {
     // Default configs
     private fromAddy = '"noreply@bluduck.com" <bluduckmailer@gmail.com>';
     private transporter = createTransport({
-        host: this.configService.get('SMTP_HOST'),
-        port: this.configService.get('SMTP_PORT'),
-        secure: this.configService.get('SMTP_SECURE') || true,
+        host: process.env.SMTP_HOST || this.configService.get('SMTP_HOST'),
+        port: process.env.SMTP_PORT || this.configService.get('SMTP_PORT'),
+        secure: process.env.SMTP_SECURE || this.configService.get('SMTP_SECURE') || true,
         auth: {
-            user: this.configService.get('SMTP_USER'),
-            pass: this.configService.get('SMTP_PASS')
+            user: process.env.SMTP_USER || this.configService.get('SMTP_USER'),
+            pass: process.env.SMTP_PASS || this.configService.get('SMTP_PASS')
         }
       });
     private host = this.configService.get('URL_HOST');
