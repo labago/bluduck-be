@@ -11,8 +11,8 @@ export class Email {
   @Column({ length: 255 })
   hash: string;
 
-  @Column()
-  userId: number;
+  @Column({ length: 255 })
+  email: string;
 
   @CreateDateColumn({ nullable: true, type: 'timestamp', default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: Date;

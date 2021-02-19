@@ -1,4 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from 'modules/config';
 import { UserModule } from 'modules/user';
@@ -8,8 +9,9 @@ import { EmailService } from './email.service';
 
 @Module({
   imports: [
-    UserModule,
+    forwardRef(() => UserModule),
     ConfigModule,
+    PassportModule,
     TypeOrmModule.forFeature([Email])],
   exports: [EmailService],
   controllers: [EmailController],

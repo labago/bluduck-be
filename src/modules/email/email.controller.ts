@@ -32,14 +32,14 @@ export class EmailController {
   //   return await this.taskService.getProjectsByCompany(id, companyId);
   // }
 
-  @Post(':id')
-  @ApiOperation({ summary: "Create a project under company <id>." })
-  @ApiResponse({ status: 201, description: 'Successfully sent email.' })
-  async create(@Param('id') companyId, @Request() req: any): Promise<any> {
-    const { id } = req.user;
-    console.log(req.url);
-    // return await this.emailService.sendEmail(id, companyId);
-  }
+  // @Post(':id')
+  // @ApiOperation({ summary: "Send email under company <id>." })
+  // @ApiResponse({ status: 201, description: 'Successfully sent email.' })
+  // async create(@Param('id') companyId, @Request() req: any): Promise<any> {
+  //   const { id } = req.user;
+  //   console.log(req.url);
+  //   // return await this.emailService.sendEmail(id, companyId);
+  // }
 
 //   @Patch(':id')
 //   @ApiOperation({ summary: "Update a project under project <id>." })

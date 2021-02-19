@@ -5,6 +5,9 @@ import {
   UseGuards,
   Get,
   Request,
+  Param,
+  Query,
+  HostParam,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -16,7 +19,7 @@ import { UserService } from './../user/user.service';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
 
   @Post('login')
@@ -24,7 +27,7 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async login(@Body() payload: LoginPayload): Promise<any> {
-    const user = await this.authService.validateUser(payload);
+    const user = await this.authService.login(payload);
     return await this.authService.createToken(user);
   }
 
@@ -35,6 +38,14 @@ export class AuthController {
   async register(@Body() payload: RegisterPayload): Promise<any> {
     const user = await this.userService.create(payload);
     return await this.authService.createToken(user);
+  }
+
+  @Get('verify')
+  @ApiResponse({ status: 201, description: 'Successfully Verified User' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async verify(@Query('token') token: string, @Query('email') email: string): Promise<any> {
+    return await this.authService.validateUser(token, email);
   }
 
   @ApiBearerAuth()

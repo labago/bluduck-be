@@ -3,23 +3,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { User } from './user.entity';
-import { UserPatchDto, UserCredentialsDto } from './dto';
+import { UserPatchDto, UserCredentialsDto, UserDto } from './dto';
+import { EmailService } from 'modules/email/email.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private readonly emailService: EmailService
   ) {}
 
-  async get(id: number) {
+  async get(id: number): Promise<User>  {
     return this.userRepository.findOne({
       where: { id },
       relations: ['companies']
     });
   }
 
-  async getByEmail(email: string) {
+  async getByEmail(email: string): Promise<User> {
     return await this.userRepository
       .createQueryBuilder('users')
       .where('users.email = :email')
@@ -29,17 +31,17 @@ export class UserService {
 
   async create(payload: UserCredentialsDto) {
     const user = await this.getByEmail(payload.email);
-
     if (user) {
     throw new NotAcceptableException(
         'User with provided email already exists.',
       );
     }
-
-    return await this.userRepository.save(this.userRepository.create(payload));
+    const newUser = await this.userRepository.create(payload);
+    this.emailService.sendVerificationEmail(newUser);
+    return await this.userRepository.save(newUser);
   }
 
-  async patch(userId: number, payload: UserPatchDto): Promise<User> {
+  async patch(userId: number, payload: UserPatchDto): Promise<UserDto> {
     const user = await this.get(userId);
     if (!user) {
       throw new NotFoundException(
@@ -51,5 +53,9 @@ export class UserService {
     await this.userRepository.update({ id }, payload);
     const newUser = await this.get(id);
     return newUser;
+  }
+
+  async verifyUser(email: string): Promise<any> {
+    return await this.userRepository.update({ email }, { isVerified: true });
   }
 }

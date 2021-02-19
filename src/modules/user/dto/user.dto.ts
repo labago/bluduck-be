@@ -8,7 +8,7 @@ export class UserDto {
     phoneNumber: string;
     avatarColor: string;
     role: string;
-    verified: boolean;
+    isVerified: boolean;
     companies?: Company[];
     isAdmin: boolean;
 }

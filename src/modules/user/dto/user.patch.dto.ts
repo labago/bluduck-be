@@ -34,5 +34,5 @@ export class UserPatchDto {
     @ApiProperty({ 
         required: false
     })
-    verified: boolean;
+    isVerified: boolean;
 }

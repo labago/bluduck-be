@@ -29,11 +29,11 @@ export class User {
   role: string;
 
   @Column({ nullable: true})
-  verified: boolean;
+  isVerified: boolean;
   
   @BeforeInsert()
-  defaultVerifiedValue() {
-    this.verified = false;
+  defaultisVerifiedValue() {
+    this.isVerified = false;
   }
 
   @Column({
