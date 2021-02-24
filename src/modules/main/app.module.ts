@@ -8,6 +8,7 @@ import { UserModule } from './../user/user.module';
 import { CompanyModule } from './../company/company.module';
 import { ProjectModule } from './../project/project.module';
 import { EmailModule } from 'modules/email/email.module';
+import { TaskModule } from 'modules/task';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { EmailModule } from 'modules/email/email.module';
     UserModule,
     CompanyModule,
     ProjectModule,
-    EmailModule
+    EmailModule,
+    TaskModule
   ],
   providers: [AppService],
 })

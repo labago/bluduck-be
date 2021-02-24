@@ -15,7 +15,6 @@ import { CompanyService } from './company.service';
 import { UserDto } from '../user/dto';
 import { CompanyCreateDto } from './dto/company.create.dto';
 import { CompanyPatchDto } from './dto/company.patch.dto';
-import { Company } from './company.entity';
 
 @Controller('api/company')
 @ApiTags('company')
@@ -42,6 +41,14 @@ export class CompanyController {
   async getById(@Param('id') companyId: number, @Request() req: any): Promise<any> {
     const user = req.user as UserDto;
     return await this.companyService.getCompanyWithProjects(companyId, user);
+  }
+
+  @Post('invite')
+  @ApiOperation({ summary: "Invite someone to the company." })
+  @ApiResponse({ status: 201, description: 'Successfully invited to company.' })
+  async invite(@Request() req: any, @Body() payload: CompanyCreateDto): Promise<any> {
+    const user = req.user as UserDto;
+    return await this.companyService.create(user, payload);
   }
 
   @Post()

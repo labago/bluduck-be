@@ -17,10 +17,10 @@ export class CompanyService {
     private readonly userService: UserService
   ) {}
 
-  async get(id: number): Promise<Company> {
+  async getCompanyById(id: number): Promise<Company> {
     return await this.companyRepository.findOne({
       where: { id },
-      relations: ["owner", "projects"]
+      relations: ["owner", "projects", "users"]
     });
   }
 

@@ -14,4 +14,6 @@ export class RegisterPayload {
   @IsNotEmpty()
   @MinLength(5)
   password: string;
+
+  
 }

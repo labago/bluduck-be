@@ -1,5 +1,5 @@
 import { Project } from 'modules/project/project.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { User } from '../user/user.entity'
 
 @Entity({
@@ -21,9 +21,15 @@ export class Company {
   @Column({ nullable: true })
   userLimit: number;
 
+  @Column({ nullable: true })
+  projectLimit: number;
+
+  @Column({ nullable: true })
+  taskLimit: number;
+
   @CreateDateColumn({ nullable: true, type: 'timestamp', default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: Date;
 
+  @ManyToMany(() => User)
   users?: User[];
-  
 }

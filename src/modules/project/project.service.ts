@@ -15,12 +15,12 @@ export class ProjectService {
     private readonly companyService: CompanyService
   ) {}
 
-  async getProjectsById(id: number): Promise<ProjectDto> {
+  async getProjectById(id: number): Promise<ProjectDto> {
     return await this.projectRepository.findOne(id);
   }
 
   async getProjectsByCompany(userId: number, companyId: number): Promise<ProjectDto[]> {
-    const company = await this.companyService.get(companyId);
+    const company = await this.companyService.getCompanyById(companyId);
     if (company.users.filter(user => user.id !== userId)) {
       throw new NotFoundException('Must be a member of company to retrieve projects.');
     }
@@ -39,7 +39,7 @@ export class ProjectService {
 
   async create(userId: number, companyId: number, payload: ProjectCreateDto): Promise<Project> {
     console.log(payload);
-    const company = await this.companyService.get(companyId);
+    const company = await this.companyService.getCompanyById(companyId);
     if (company.owner.id !== userId) {
       throw new NotFoundException('Only owner of company can create projects.');
     }
@@ -64,7 +64,7 @@ export class ProjectService {
       throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis project.'); 
     }
     await this.projectRepository.update({ id: projectId }, payload);
-    return await this.getProjectsById(projectId);
+    return await this.getProjectById(projectId);
   }
 
   async delete(userId: number, projectId: number): Promise<any> {
