@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 
 import { Company } from './company.entity';
 import { CompanyDto } from './dto/company.dto';
@@ -8,13 +8,16 @@ import { UserDto } from '../user/dto'
 import { UserService } from '../user/user.service';
 import { CompanyCreateDto } from './dto/company.create.dto';
 import { CompanyPatchDto } from './dto/company.patch.dto';
+import { CompanyInviteDto } from './dto/company.invite.dto';
+import { EmailService } from 'modules/email';
 
 @Injectable()
 export class CompanyService {
   constructor(
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly emailService: EmailService
   ) {}
 
   async getCompanyById(id: number): Promise<Company> {
@@ -48,6 +51,49 @@ export class CompanyService {
     });
   }
 
+  async invite(userId: number, payload: CompanyInviteDto): Promise<any> {
+    const company = await this.companyRepository.findOne(payload.companyId, { relations: ["owner", "users"]});
+    
+    if (company.owner.id !== userId) {
+      throw new BadRequestException(
+        'Must be owner to invite.',
+      );
+    }
+
+    const user = await this.userService.getByEmail(payload.email);
+    if (!user) {
+      throw new BadRequestException(
+        'User needs to be registered and verified to join company.',
+      );
+    }
+
+    if (userId === user.id) {
+      throw new BadRequestException(
+        'Owner cannot invite self to company.',
+      );
+    }
+
+    if (!user.isVerified) {
+      throw new BadRequestException(
+        'User needs to be registered and verified to join company.',
+      );
+    }
+
+    if (company.users.filter(user => user.id === userId)) {
+      throw new BadRequestException(
+        'User already exists in company.',
+      );
+    }
+
+    await getConnection()
+            .createQueryBuilder()
+            .relation(Company, 'users')
+            .of(company)
+            .add(user);
+    const result = await this.emailService.sendCompanyInviteNotification(payload.email, company.companyName);
+    return result;
+  }
+
   async create({ id }: UserDto, payload: CompanyCreateDto): Promise<any> {
     const { companyName } = payload;
     const user = await this.userService.get(id);
@@ -69,7 +115,9 @@ export class CompanyService {
       this.companyRepository.create({
         companyName,
         owner,
-        userLimit: payload.userLImit
+        userLimit: payload.userLImit,
+        projectLimit: payload.projectLimit,
+        taskLimit: payload.taskLimit
       }));
   }
 

@@ -53,9 +53,6 @@ export class User {
   @Column({nullable: false, default: false})
   isAdmin: boolean;
 
-  @OneToMany(type => Company, company => company.owner)
-  companies: Company[];
-
   @CreateDateColumn({ nullable: true, type: 'timestamp', default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: Date;
 }

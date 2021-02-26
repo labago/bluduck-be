@@ -15,6 +15,7 @@ import { CompanyService } from './company.service';
 import { UserDto } from '../user/dto';
 import { CompanyCreateDto } from './dto/company.create.dto';
 import { CompanyPatchDto } from './dto/company.patch.dto';
+import { CompanyInviteDto } from './dto/company.invite.dto';
 
 @Controller('api/company')
 @ApiTags('company')
@@ -46,9 +47,9 @@ export class CompanyController {
   @Post('invite')
   @ApiOperation({ summary: "Invite someone to the company." })
   @ApiResponse({ status: 201, description: 'Successfully invited to company.' })
-  async invite(@Request() req: any, @Body() payload: CompanyCreateDto): Promise<any> {
-    const user = req.user as UserDto;
-    return await this.companyService.create(user, payload);
+  async invite(@Request() req: any, @Body() payload: CompanyInviteDto): Promise<any> {
+    const { id } = req.user as UserDto;
+    return await this.companyService.invite(id, payload);
   }
 
   @Post()

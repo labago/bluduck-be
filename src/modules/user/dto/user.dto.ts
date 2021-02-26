@@ -9,6 +9,5 @@ export class UserDto {
     avatarColor: string;
     role: string;
     isVerified: boolean;
-    companies?: Company[];
     isAdmin: boolean;
 }

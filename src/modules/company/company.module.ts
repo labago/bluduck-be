@@ -6,12 +6,14 @@ import { CompanyController } from './company.controller';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user';
 import { PassportModule } from '@nestjs/passport';
+import { EmailModule } from 'modules/email';
 
 @Module({
   imports: [
     AuthModule,
     UserModule,
     PassportModule,
+    EmailModule,
     TypeOrmModule.forFeature([Company])],
   exports: [CompanyService],
   controllers: [CompanyController],

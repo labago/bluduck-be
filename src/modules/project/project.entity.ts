@@ -13,11 +13,11 @@ export class Project {
   @Column({ nullable: false, length: 255 })
   projectName: string;
 
-  @Column({ nullable: false})
+  @Column({ nullable: true})
   @IsDate()
   dueDate: Date;
 
-  @Column({ nullable: false})
+  @Column({ nullable: true})
   @IsDate()
   latestUpdate: Date;
 

@@ -12,7 +12,7 @@ export class Company {
   @Column({ length: 255 })
   companyName: string;
 
-  @ManyToOne(type => User, user => user.companies, { onDelete: 'CASCADE' })
+  @ManyToOne(type => User, { onDelete: 'CASCADE' })
   owner: User;
 
   @OneToMany(type => Project, project => project.company)
@@ -30,6 +30,7 @@ export class Company {
   @CreateDateColumn({ nullable: true, type: 'timestamp', default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: Date;
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, { cascade: true })
+  @JoinTable()
   users?: User[];
 }

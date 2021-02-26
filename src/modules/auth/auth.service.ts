@@ -18,7 +18,7 @@ export class AuthService {
   async createToken(user: User) {
     return {
       expiresIn: this.configService.get('JWT_EXPIRATION_TIME'),
-      accessToken: this.jwtService.sign({ id: user.id, verified: user.isVerified }),
+      accessToken: this.jwtService.sign({ id: user.id, verified: user.isVerified, isAdmin: user.isAdmin }),
       user,
     };
   }
@@ -26,7 +26,7 @@ export class AuthService {
   async login(payload: LoginPayload): Promise<any> {
     const user = await this.userService.getByEmail(payload.email);
     if (!user || !Hash.compare(payload.password, user.password)) {
-      throw new UnauthorizedException('Invalid credentials you wannabe hax0rz');
+      throw new UnauthorizedException('Invalid credentials');
     }
     return user;
   }

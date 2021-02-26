@@ -34,16 +34,16 @@ export class ProjectController {
     return await this.projectService.getProjectsByCompany(id, companyId);
   }
 
-  @Post('company/:id')
-  @ApiOperation({ summary: "Create a project under company <id>." })
+  @Post()
+  @ApiOperation({ summary: "Create a project." })
   @ApiResponse({ status: 201, description: 'Successfully added project.' })
-  async create(@Param('id') companyId, @Request() req: any, @Body() payload: ProjectCreateDto): Promise<any> {
+  async create(@Request() req: any, @Body() payload: ProjectCreateDto): Promise<any> {
     const { id } = req.user;
-    return await this.projectService.create(id, companyId, payload);
+    return await this.projectService.create(id, payload);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: "Update a project under project <id>." })
+  @ApiOperation({ summary: "Update a project" })
   @ApiResponse({ status: 201, description: 'Successfully updated project.' })
   async patch(@Param('id') projectId: number, 
               @Request() req, @Body() 
@@ -53,7 +53,7 @@ export class ProjectController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: "Delete a project under project <id>." })
+  @ApiOperation({ summary: "Delete a project." })
   @ApiResponse({ status: 201, description: 'Successfully deleted project.' })
   async delete(@Request() req, @Param('id') projectId: number): Promise<any> {
     const { id } = req.user;

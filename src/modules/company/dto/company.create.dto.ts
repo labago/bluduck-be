@@ -17,6 +17,15 @@ export class CompanyCreateDto {
     @ApiProperty({
       required: false
     })
-    @IsNotEmpty()
     userLImit: number;
+
+    @ApiProperty({
+      required: false
+    })
+    projectLimit: number;
+
+    @ApiProperty({
+      required: false
+    })
+    taskLimit: number;
   }

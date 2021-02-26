@@ -16,8 +16,7 @@ export class UserService {
 
   async get(id: number): Promise<User>  {
     return this.userRepository.findOne({
-      where: { id },
-      relations: ['companies']
+      where: { id }
     });
   }
 

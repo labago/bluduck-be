@@ -41,9 +41,24 @@ export class EmailService {
                 to: recipient.email,
                 subject: 'Please verify your email',
                 text: '',
-                html: `<p>Welcome to BluDuck! If you received this email in error, please ignore. <a href="${this.host}/api/auth/verify?token=${hash}&email=${recipient.email}">Click here to verify your account.</a>.</p> <br /> Thank you, <br /><br /> The BluDuck Team`
+                html: `<p>Welcome to BluDuck! If you received this email in error, please ignore. <a href="${this.host}/verify?token=${hash}&email=${recipient.email}">Click here to verify your account.</a>.</p> <br /> Thank you, <br /><br /> The BluDuck Team`
             });
 
+            return result.messageId;
+        } catch(e) {
+            throw new BadRequestException(e);
+        }
+    }
+
+    async sendCompanyInviteNotification(recipient: string, companyName: string): Promise<any> {
+        try {
+            const result = await this.transporter.sendMail({
+                from: this.fromAddy,
+                to: recipient,
+                subject: `Welcome! You have been added to ${companyName}`,
+                text: '',
+                html: `<p>You have been added to a company and can now log in to begin creating projects and tasks. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
+            });
             return result.messageId;
         } catch(e) {
             throw new BadRequestException(e);
