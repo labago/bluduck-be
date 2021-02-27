@@ -109,16 +109,25 @@ export class CompanyService {
       );
     }
 
-    const owner = await this.userService.get(payload.ownerId);
+    try {
+      const owner = await this.userService.get(payload.ownerId);
     
-    return await this.companyRepository.save(
-      this.companyRepository.create({
-        companyName,
-        owner,
-        userLimit: payload.userLImit,
-        projectLimit: payload.projectLimit,
-        taskLimit: payload.taskLimit
-      }));
+      const company = await this.companyRepository.save(
+                              this.companyRepository.create({
+                                companyName,
+                                owner,
+                                userLimit: payload.userLImit,
+                                projectLimit: payload.projectLimit,
+                                taskLimit: payload.taskLimit
+                              }));
+      return await getConnection()
+                    .createQueryBuilder()
+                    .relation(Company, 'users')
+                    .of(company)
+                    .add(owner);
+    } catch (e) {
+      
+    }    
   }
 
   async patch(req: any, companyId, payload: CompanyPatchDto): Promise<any> {

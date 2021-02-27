@@ -4,7 +4,7 @@ import { Request, NextFunction } from 'express';
 @Injectable()
 export class UserVerifiedMiddleware implements NestMiddleware {
   async use(req: Request, next: NextFunction) {
-    const { isVerified } = req.user ;
+    const { isVerified } = req.user as UserDto;
     if (!isVerified) {
       throw new UnauthorizedException('User must verify ')
     }

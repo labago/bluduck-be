@@ -16,7 +16,7 @@ export class ProjectService {
   ) {}
 
   async getProjectById(id: number): Promise<ProjectDto> {
-    return await this.projectRepository.findOne(id);
+    return await this.projectRepository.findOne(id, { relations: ['company']});
   }
 
   async getProjectsByCompany(userId: number, companyId: number): Promise<ProjectDto[]> {

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CompanyService } from 'modules/company';
 import { ProjectService } from 'modules/project';
@@ -21,25 +21,28 @@ export class TaskService {
   }
 
   async getTasksByProjectId(userId: number, projectId: number): Promise<TaskDto[]> {
-    const project = await this.projectService.getProjectById(projectId);
-    const company = await this.companyService.getCompanyById(project.company.id);
-    const userFound = await company.users.filter(user => user.id === userId)[0];
-
-    if (!userFound) {
-      throw new NotFoundException('Only users in company can view projects.');
-    }
     
-    return this.taskRepository.find({
-      join: {
-        alias: 'task',
-        leftJoinAndSelect: {
-          project: 'task.project'
-        }
-      },
-      where: {
-        project: projectId
+      const project = await this.projectService.getProjectById(projectId);
+      const company = await this.companyService.getCompanyById(project.company.id);
+      const userFound = await company.users.filter(user => user.id === userId)[0];
+
+      console.log(userFound);
+
+      if (!userFound) {
+        throw new NotFoundException('Only users in company can view projects.');
       }
-    });
+      return this.taskRepository.find({
+        join: {
+          alias: 'task',
+          leftJoinAndSelect: {
+            project: 'task.project'
+          }
+        },
+        where: {
+          project: projectId
+        }
+      });
+    
   }
 
   async create(userId: number, payload: TaskCreateDto): Promise<TaskDto> {

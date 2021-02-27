@@ -1,6 +1,5 @@
-import { Module } from '@nestjs/common';
+import { Module, UseInterceptors } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from './../config';
 import { AuthModule } from './../auth/auth.module';
@@ -9,6 +8,7 @@ import { CompanyModule } from './../company/company.module';
 import { ProjectModule } from './../project/project.module';
 import { EmailModule } from 'modules/email/email.module';
 import { TaskModule } from 'modules/task';
+import { CommonModule } from 'modules/common';
 
 @Module({
   imports: [
@@ -34,7 +34,8 @@ import { TaskModule } from 'modules/task';
     CompanyModule,
     ProjectModule,
     EmailModule,
-    TaskModule
+    TaskModule,
+    CommonModule
   ],
   providers: [AppService],
 })

@@ -7,13 +7,15 @@ import {
   Delete,
   UseGuards,
   Request,
-  Param
+  Param,
+  UseInterceptors
 } from '@nestjs/common';
 import { ApiResponse, ApiTags, ApiBearerAuth, ApiOperation, ApiCreatedResponse } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { TaskService } from './task.service';
 import { TaskCreateDto } from './dto/task.create.dto';
 import { TaskPatchDto } from './dto';
+import { GlobalErrorHandler } from 'modules/common/middleware/globalErrorHandler.middleware';
 
 @Controller('api/task')
 @ApiTags('task')
@@ -21,11 +23,12 @@ import { TaskPatchDto } from './dto';
 @UseGuards(AuthGuard())
 @ApiResponse({ status: 400, description: 'Bad Request' })
 @ApiResponse({ status: 401, description: 'Unauthorized' })
+
 export class TaskController {
   constructor(
     private readonly taskService: TaskService
   ) {}
-
+  
   @Get('project/:id')
   @ApiOperation({ summary: "Retrieve all tasks under project <id>." })
   @ApiResponse({ status: 201, description: 'Successfully retrieved tasks.' })
