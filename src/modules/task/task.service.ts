@@ -1,10 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CompanyService } from 'modules/company';
+import { EmailService } from 'modules/email';
 import { ProjectService } from 'modules/project';
-import { Repository } from 'typeorm';
+import { UserService } from 'modules/user';
+import { getConnection, Repository } from 'typeorm';
 import { TaskDto, TaskPatchDto } from './dto';
 import { TaskCreateDto } from './dto/task.create.dto';
+import { TaskInviteDto } from './dto/task.invite.dto';
 import { Task } from './task.entity';
 
 @Injectable()
@@ -13,11 +16,13 @@ export class TaskService {
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
     private readonly companyService: CompanyService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly userService: UserService,
+    private readonly emailService: EmailService
   ) {}
 
   async getTaskById(id: number): Promise<TaskDto> {
-    return await this.taskRepository.findOne(id);
+    return await this.taskRepository.findOne(id, { relations: ['users', 'owner'] });
   }
 
   async getTasksByProjectId(userId: number, projectId: number): Promise<TaskDto[]> {
@@ -25,8 +30,6 @@ export class TaskService {
       const project = await this.projectService.getProjectById(projectId);
       const company = await this.companyService.getCompanyById(project.company.id);
       const userFound = await company.users.filter(user => user.id === userId)[0];
-
-      console.log(userFound);
 
       if (!userFound) {
         throw new NotFoundException('Only users in company can view projects.');
@@ -48,14 +51,14 @@ export class TaskService {
   async create(userId: number, payload: TaskCreateDto): Promise<TaskDto> {
     const project = await this.projectService.getProjectById(payload.projectId);
     const company = await this.companyService.getCompanyById(project.company.id);    
-    const userFound = await company.users.filter(user => user.id === userId)[0];
+    // const userFound = await company.users.filter(user => user.id === userId)[0];
 
-    if (!userFound) {
-      throw new NotFoundException('Only users in company can create tasks.');
+    if (company.owner.id !== userId) {
+      throw new NotFoundException('Only owner in company can create tasks.');
     }
 
     return await this.taskRepository.save(this.taskRepository.create({
-      owner: userFound,
+      owner: company.owner,
       project: project,
       date: payload.date,
       status: payload.status,
@@ -82,5 +85,38 @@ export class TaskService {
       throw new UnauthorizedException('Only owners of task can delete task.'); 
     }
     return await this.taskRepository.delete(taskId);;
+  }
+
+  async invite(userId: number, payload: TaskInviteDto): Promise<any> {
+    const company = await this.companyService.getCompanyById(payload.companyId);
+    
+    if (company.owner.id !== userId) {
+      throw new BadRequestException(
+        'Must be owner to add user to task.',
+      );
+    }
+
+    const user = await this.userService.getByEmail(payload.email);
+    if (!user || !user.isVerified) {
+      throw new BadRequestException(
+        'User needs to be registered and verified to join company.',
+      );
+    }
+
+    const task = await this.getTaskById(payload.taskId);
+    if (company.users.filter(user => user.id === userId)) {
+      throw new BadRequestException(
+        'User already added to task.',
+      );
+    }
+
+    await getConnection()
+            .createQueryBuilder()
+            .relation(Task, 'users')
+            .of(task)
+            .add(user);
+
+    const result = await this.emailService.sendTaskInviteNotification(payload.email, task.taskTitle);
+    return result;
   }
 }

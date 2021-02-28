@@ -2,7 +2,7 @@ import { Exclude } from 'class-transformer';
 import { IsDate } from 'class-validator';
 import { Project } from 'modules/project/project.entity';
 import { User } from 'modules/user/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, BeforeInsert, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, BeforeInsert, ManyToOne, JoinTable, ManyToMany } from 'typeorm';
 
 export enum Status {
   TODO,
@@ -34,6 +34,8 @@ export class Task {
   @ManyToOne(type => User)
   owner: User;
 
+  @ManyToMany(() => User, { cascade: true })
+  @JoinTable()
   users: User[];
 
   @Column({ nullable: true })

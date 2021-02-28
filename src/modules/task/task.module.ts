@@ -8,6 +8,7 @@ import { Task } from './task.entity';
 import { TaskService } from './task.service';
 import { TaskController } from './task.controller';
 import { ProjectModule } from 'modules/project';
+import { EmailModule } from 'modules/email';
 
 @Module({
   imports: [
@@ -15,6 +16,8 @@ import { ProjectModule } from 'modules/project';
     UserModule,
     CompanyModule,
     ProjectModule,
+    UserModule,
+    EmailModule,
     PassportModule,
     TypeOrmModule.forFeature([Task])],
   exports: [TaskService],

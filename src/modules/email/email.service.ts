@@ -65,6 +65,21 @@ export class EmailService {
         }
     }
 
+    async sendTaskInviteNotification(recipient: string, taskName: string): Promise<any> {
+        try {
+            const result = await this.transporter.sendMail({
+                from: this.fromAddy,
+                to: recipient,
+                subject: `Welcome! You have been added to task ${taskName}`,
+                text: '',
+                html: `<p>You have been added to a task and can log in to review. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
+            });
+            return result.messageId;
+        } catch(e) {
+            throw new BadRequestException(e);
+        }
+    }
+
     async delete(email: string): Promise<any> {                                     
         return await this.emailRepository.delete({ email });
     }  

@@ -52,7 +52,7 @@ export class CompanyService {
   }
 
   async invite(userId: number, payload: CompanyInviteDto): Promise<any> {
-    const company = await this.companyRepository.findOne(payload.companyId, { relations: ["owner", "users"]});
+    const company = await this.getCompanyById(payload.companyId);
     
     if (company.owner.id !== userId) {
       throw new BadRequestException(

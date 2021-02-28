@@ -16,6 +16,7 @@ import { TaskService } from './task.service';
 import { TaskCreateDto } from './dto/task.create.dto';
 import { TaskPatchDto } from './dto';
 import { GlobalErrorHandler } from 'modules/common/middleware/globalErrorHandler.middleware';
+import { TaskInviteDto } from './dto/task.invite.dto';
 
 @Controller('api/task')
 @ApiTags('task')
@@ -62,5 +63,14 @@ export class TaskController {
     const { id } = req.user;
     return await this.taskService.delete(id, taskId);
   }
+
+  @Post('invite')
+  @ApiOperation({ summary: "Invite user to a task." })
+  @ApiResponse({ status: 201, description: 'Successfully added user to task.' })
+  async invite(@Request() req: any, @Body() payload: TaskInviteDto): Promise<any> {
+    const { id } = req.user;
+    return await this.taskService.invite(id, payload);
+  }
+
 }
   
