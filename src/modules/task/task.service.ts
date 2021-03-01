@@ -34,16 +34,20 @@ export class TaskService {
       if (!userFound) {
         throw new NotFoundException('Only users in company can view projects.');
       }
+      // todo add owner and assignee relations
       return this.taskRepository.find({
         join: {
           alias: 'task',
           leftJoinAndSelect: {
-            project: 'task.project'
+            project: 'task.project',
+            owner: 'task.owner',
+            users: 'task.users'
           }
         },
         where: {
           project: projectId
         }
+        
       });
     
   }

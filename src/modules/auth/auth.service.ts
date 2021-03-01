@@ -37,6 +37,11 @@ export class AuthService {
       throw new UnauthorizedException('Hashes do not appear to match');
     }
     await this.emailService.delete(email);
-    return await this.userService.verifyUser(email);
+    const result = await this.userService.verifyUser(email);
+    if (result.affected === 1) {
+      const user = await this.userService.getByEmail(email);
+      return await this.createToken(user);
+    }
+    return { status: 500, message: 'Error while verifying email.'};
   }
 }
