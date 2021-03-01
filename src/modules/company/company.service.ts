@@ -28,20 +28,12 @@ export class CompanyService {
   }
 
   async getCompanyWithProjects(companyId: number, user: UserDto): Promise<Company> {
-    const company = await this.companyRepository
-                              .createQueryBuilder('company')
-                              .leftJoinAndSelect('company.owner', 'owner')
-                              .where('company.id = :id')
-                              .setParameter('id', companyId)
-                              .getOne();
-    console.log(company);
-    if (company.owner.id !== user.id) {
-      throw new UnauthorizedException('Must be owner to view projects of company.'); 
+    const company = await this.getCompanyById(companyId);
+    const userFound = await company.users.filter(u => u.id === user.id)[0];
+    if (!userFound) {
+      throw new UnauthorizedException('Must be member of company to view projects.'); 
     }
-    return await this.companyRepository.findOne({
-      where: { id: companyId },
-      relations: ["projects"]
-    });
+    return company;
   }
 
 
