@@ -9,7 +9,6 @@ export class GlobalErrorHandler implements NestInterceptor {
     // next.handle() is an Observable of the controller's result value
     return next.handle()
     .pipe(catchError(error => {
-      console.log('dick', error);
       if (error instanceof TypeError) {
         throw new BadRequestException(error.message);
       } else {

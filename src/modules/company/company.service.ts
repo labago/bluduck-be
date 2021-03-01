@@ -51,10 +51,10 @@ export class CompanyService {
     });
   }
 
-  async invite(userId: number, payload: CompanyInviteDto): Promise<any> {
+  async invite(ownerId: number, payload: CompanyInviteDto): Promise<any> {
     const company = await this.getCompanyById(payload.companyId);
-    
-    if (company.owner.id !== userId) {
+
+    if (company.owner.id !== ownerId) {
       throw new BadRequestException(
         'Must be owner to invite.',
       );
@@ -67,7 +67,7 @@ export class CompanyService {
       );
     }
 
-    if (userId === user.id) {
+    if (ownerId === user.id) {
       throw new BadRequestException(
         'Owner cannot invite self to company.',
       );
@@ -78,8 +78,8 @@ export class CompanyService {
         'User needs to be registered and verified to join company.',
       );
     }
-
-    if (company.users.filter(user => user.id === userId)) {
+    
+    if (company.users.filter(u => u.id === user.id).length !== 0) {
       throw new BadRequestException(
         'User already exists in company.',
       );
@@ -90,8 +90,10 @@ export class CompanyService {
             .relation(Company, 'users')
             .of(company)
             .add(user);
-    const result = await this.emailService.sendCompanyInviteNotification(payload.email, company.companyName);
-    return result;
+            
+    await this.emailService.sendCompanyInviteNotification(payload.email, company.companyName);
+    
+    return { status: 200, success: 'Successfully invited user to company.'};
   }
 
   async create({ id }: UserDto, payload: CompanyCreateDto): Promise<any> {

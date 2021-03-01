@@ -57,7 +57,7 @@ export class TaskService {
       throw new NotFoundException('Only owner in company can create tasks.');
     }
 
-    return await this.taskRepository.save(this.taskRepository.create({
+    const task = await this.taskRepository.save(this.taskRepository.create({
       owner: company.owner,
       project: project,
       date: payload.date,
@@ -65,6 +65,14 @@ export class TaskService {
       taskTitle: payload.taskTitle,
       notes: payload.notes
     }));
+
+    await getConnection()
+            .createQueryBuilder()
+            .relation(Task, 'users')
+            .of(task)
+            .add(company.owner);
+
+    return task;
   }
 
   async patch(userId: number, taskId: number, payload: TaskPatchDto): Promise<TaskDto> {
