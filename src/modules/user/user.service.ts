@@ -36,7 +36,7 @@ export class UserService {
       );
     }
     const newUser = await this.userRepository.create(payload);
-    this.emailService.sendVerificationEmail(newUser);
+    await this.emailService.sendVerificationEmail(newUser);
     return await this.userRepository.save(newUser);
   }
 
@@ -52,6 +52,11 @@ export class UserService {
     await this.userRepository.update({ id }, payload);
     const newUser = await this.get(id);
     return newUser;
+  }
+
+  async updatePassword(userId: number, newPassword: string): Promise<any> {
+    await this.userRepository.update({ id: userId }, { password: newPassword });
+    return { status: 200, message: 'Password successfuly updated.' };
   }
 
   async verifyUser(email: string): Promise<any> {

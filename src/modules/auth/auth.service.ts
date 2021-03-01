@@ -4,6 +4,7 @@ import { EmailService } from 'modules/email';
 import { Hash } from '../../utils/Hash';
 import { ConfigService } from './../config';
 import { User, UserService } from './../user';
+import { ChangePasswordPayload } from './changePassword.payload';
 import { LoginPayload } from './login.payload';
 
 @Injectable()
@@ -44,5 +45,13 @@ export class AuthService {
       return await this.createToken(user);
     }
     return { status: 500, message: 'Error while verifying email.'};
+  }
+
+  async changePassword(userId: number, payload: ChangePasswordPayload): Promise<any> {
+    const user = await this.userService.get(userId);
+    if (!user || !Hash.compare(payload.oldPassword, user.password)) {
+      throw new UnauthorizedException('Old password does not match current password.');
+    }
+    return await this.userService.updatePassword(userId, payload.newPassword);
   }
 }

@@ -13,6 +13,8 @@ import { ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService, LoginPayload, RegisterPayload } from './';
 import { UserService } from './../user/user.service';
+import { ChangePasswordPayload } from './changePassword.payload';
+import { UserDto } from 'modules/user';
 
 @Controller('api/auth')
 @ApiTags('authentication')
@@ -46,6 +48,17 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async verify(@Query('token') token: string, @Query('email') email: string): Promise<any> {
     return await this.authService.validateUser(token, email);
+  }
+
+  @Post('changePassword')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @ApiResponse({ status: 201, description: 'Successfully changed password' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async changePassword(@Request() req: any, @Body() payload: ChangePasswordPayload ): Promise<any> {
+    const { id } = req.user;
+    return await this.authService.changePassword(id, payload);
   }
 
   @ApiBearerAuth()
