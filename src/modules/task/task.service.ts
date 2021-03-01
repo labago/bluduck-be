@@ -70,21 +70,16 @@ export class TaskService {
       notes: payload.notes
     }));
 
-    await getConnection()
-            .createQueryBuilder()
-            .relation(Task, 'users')
-            .of(task)
-            .add(company.owner);
-
     return task;
   }
 
   async patch(userId: number, taskId: number, payload: TaskPatchDto): Promise<TaskDto> {
     const task = await this.getTaskById(taskId);
     const userFound = await task.users.filter(user => user.id === userId)[0];
+    const owner = await this.userService.get(userId);
 
-    if (!userFound) {
-      throw new NotFoundException('Only users added to task can update tasks.');
+    if (!userFound && !owner) {
+      throw new NotFoundException('Only owner and users added to task can perform this action.');
     }
     await this.taskRepository.update({ id: taskId }, payload);
     return this.getTaskById(taskId);
