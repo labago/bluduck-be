@@ -37,10 +37,16 @@ export class CompanyService {
   }
 
 
-  async getAllCompaniesForOwner({ id }: UserDto): Promise<CompanyDto[]> {
-    return await this.companyRepository.find({
-      where: { owner: id }
-    });
+  async getAllCompaniesByUser({ id }: UserDto): Promise<CompanyDto[]> {
+    const companies = await this.companyRepository.find({ relations:['users'] });
+    let companyList = [];
+    companies.forEach(company => {
+      const user = company.users.filter(user => user.id === id);
+      if (user.length > 0) {
+        companyList.push(company);
+      }
+    })
+    return companyList;
   }
 
   async invite(ownerId: number, payload: CompanyInviteDto): Promise<any> {

@@ -33,7 +33,7 @@ export class CompanyController {
   @ApiResponse({ status: 201, description: 'Successfully retrieved companies.' })
   async get(@Request() req: any): Promise<any> {
     const user = req.user as UserDto;
-    return await this.companyService.getAllCompaniesForOwner(user);
+    return await this.companyService.getAllCompaniesByUser(user);
   }
 
   @Get(':id')
