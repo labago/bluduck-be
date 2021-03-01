@@ -84,7 +84,7 @@ export class EmailService {
         return await this.emailRepository.delete({ email });
     }  
 
-    async getHashByEmail(email: string): Promise<any> {
-        return await this.emailRepository.findOne({ email });
+    async getHashByEmail(email: string): Promise<Email[]> {
+        return await this.emailRepository.find({ email });
     }
 }

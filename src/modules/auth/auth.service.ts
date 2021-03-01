@@ -32,8 +32,9 @@ export class AuthService {
   }
 
   async validateUser(token: string, email: string): Promise<any> {
-    const emailHash = await this.emailService.getHashByEmail(email);
-    if (emailHash.hash != token) {
+    const emails = await this.emailService.getHashByEmail(email);
+    const emailFound = emails.filter(e => e.hash === token)[0];
+    if (!emailFound) {
       throw new UnauthorizedException('Hashes do not appear to match');
     }
     await this.emailService.delete(email);
