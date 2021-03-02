@@ -15,6 +15,8 @@ import { AuthService, LoginPayload, RegisterPayload } from './';
 import { UserService } from './../user/user.service';
 import { ChangePasswordPayload } from './changePassword.payload';
 import { UserDto } from 'modules/user';
+import { ForgotPasswordPayload } from './forgotPassword.payload';
+import { ForgotPasswordChangePayload } from './forgotPasswordChange.payload';
 
 @Controller('api/auth')
 @ApiTags('authentication')
@@ -48,6 +50,22 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async verify(@Query('token') token: string, @Query('email') email: string): Promise<any> {
     return await this.authService.validateUser(token, email);
+  }
+
+  @Post('forgotPassword')
+  @ApiResponse({ status: 201, description: 'Successfully changed password' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async forgotPassword(@Body() payload: ForgotPasswordPayload ): Promise<any> {
+    return await this.authService.forgotPassword(payload);
+  }
+
+  @Post('forgotPassword/verify')
+  @ApiResponse({ status: 201, description: 'Successfully changed password' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async forgotPasswordVerify(@Body() payload: ForgotPasswordChangePayload): Promise<any> {
+    return await this.authService.forgotPasswordVerify(payload);
   }
 
   @Post('changePassword')

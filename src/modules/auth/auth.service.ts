@@ -5,6 +5,8 @@ import { Hash } from '../../utils/Hash';
 import { ConfigService } from './../config';
 import { User, UserService } from './../user';
 import { ChangePasswordPayload } from './changePassword.payload';
+import { ForgotPasswordPayload } from './forgotPassword.payload';
+import { ForgotPasswordChangePayload } from './forgotPasswordChange.payload';
 import { LoginPayload } from './login.payload';
 
 @Injectable()
@@ -53,5 +55,21 @@ export class AuthService {
       throw new UnauthorizedException('Old password does not match current password.');
     }
     return await this.userService.updatePassword(userId, payload.newPassword);
+  }
+  async forgotPassword(payload: ForgotPasswordPayload): Promise<any> {
+    const user = await this.userService.getByEmail(payload.email);
+    return await this.emailService.sendForgotPasswordEmail(payload.email);
+  }
+
+  async forgotPasswordVerify(payload: ForgotPasswordChangePayload): Promise<any> {
+    const emails = await this.emailService.getHashByEmail(payload.email);
+    const user = await this.userService.getByEmail(payload.email);
+    const emailFound = emails.filter(e => e.hash === payload.token)[0];
+    if (!emailFound) {
+      throw new UnauthorizedException('Hashes do not appear to match');
+    }
+    await this.emailService.delete(payload.email);
+    await this.userService.updatePassword(user.id, payload.newPassword);
+    return { status: 201, message: 'Successfully updated password.'};
   }
 }
