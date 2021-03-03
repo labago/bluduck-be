@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, BeforeInsert } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, BeforeInsert, ManyToOne } from 'typeorm';
 import { PasswordTransformer } from './password.transformer';
 import { Company } from '../company/company.entity';
 
@@ -43,6 +43,9 @@ export class User {
   })
   @Exclude({ toPlainOnly: true })
   password: string;
+
+  @ManyToOne(type => Company, company => company.projects)
+  company: Company;
 
   // exclude password when retrieving model
   toJSON() {
