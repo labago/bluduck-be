@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Company } from 'modules/company/company.entity';
 
 export class UserPatchDto {
     @ApiProperty({ 
@@ -34,7 +35,7 @@ export class UserPatchDto {
     @ApiProperty({ 
         required: false
     })
-    companyId: number;
+    company: Company;
 
     @ApiProperty({ 
         required: false

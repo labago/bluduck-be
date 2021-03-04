@@ -1,4 +1,4 @@
-import { Company } from "modules/company";
+import { Company } from "modules/company/company.entity";
 
 export class UserDto {
     id: number;
@@ -8,6 +8,7 @@ export class UserDto {
     phoneNumber: string;
     avatarColor: string;
     role: string;
+    company: Company;
     isVerified: boolean;
     isAdmin: boolean;
 }

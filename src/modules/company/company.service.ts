@@ -91,7 +91,7 @@ export class CompanyService {
     }
 
     const userPatchDto = new UserPatchDto();
-    userPatchDto.companyId = payload.companyId;
+    userPatchDto.company = company;
     await this.userService.patch(user.id, userPatchDto);
 
     await getConnection()
