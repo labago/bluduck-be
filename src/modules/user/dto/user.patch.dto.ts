@@ -34,5 +34,10 @@ export class UserPatchDto {
     @ApiProperty({ 
         required: false
     })
+    companyId: number;
+
+    @ApiProperty({ 
+        required: false
+    })
     isVerified: boolean;
 }

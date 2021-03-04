@@ -4,7 +4,7 @@ import { getConnection, Repository } from 'typeorm';
 
 import { Company } from './company.entity';
 import { CompanyDto } from './dto/company.dto';
-import { UserDto } from '../user/dto'
+import { UserDto, UserPatchDto } from '../user/dto'
 import { UserService } from '../user/user.service';
 import { CompanyCreateDto } from './dto/company.create.dto';
 import { CompanyPatchDto } from './dto/company.patch.dto';
@@ -90,6 +90,10 @@ export class CompanyService {
       );
     }
 
+    const userPatchDto = new UserPatchDto();
+    userPatchDto.companyId = payload.companyId;
+    await this.userService.patch(user.id, userPatchDto);
+
     await getConnection()
             .createQueryBuilder()
             .relation(Company, 'users')
@@ -142,12 +146,6 @@ export class CompanyService {
     if (!user.isAdmin) {
       throw new UnauthorizedException('Only admins may make changes to company.'); 
     }
-    // const company = await this.companyRepository
-    //                           .createQueryBuilder('company')
-    //                           .leftJoinAndSelect('company.owner', 'owner')
-    //                           .where('company.id = :id')
-    //                           .setParameter('id', companyId)
-    //                           .getOne();
     await this.companyRepository.update({ id: companyId }, payload);
     return await this.companyRepository.findOne(companyId);
   }
