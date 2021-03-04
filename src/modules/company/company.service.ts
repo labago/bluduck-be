@@ -23,7 +23,14 @@ export class CompanyService {
   async getCompanyById(id: number): Promise<Company> {
     return await this.companyRepository.findOne({
       where: { id },
-      relations: ["owner", "projects", "users"]
+      relations: ["owner", "projects", "projects.users", "users"]
+    });
+  }
+
+  async getCompanyByIdWithProjectUsers(id: number): Promise<Company> {
+    return await this.companyRepository.findOne({
+      where: { id },
+      relations: ["owner", "projects", "projects.tasks", "users"]
     });
   }
 

@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CompanyService } from 'modules/company';
 import { EmailService } from 'modules/email';
 import { ProjectService } from 'modules/project';
+import { Project } from '../project/project.entity';
 import { UserService } from 'modules/user';
-import { getConnection, Repository } from 'typeorm';
+import { getConnection, Repository, Transaction } from 'typeorm';
 import { TaskDto, TaskPatchDto } from './dto';
 import { TaskCreateDto } from './dto/task.create.dto';
 import { TaskInviteDto } from './dto/task.invite.dto';
@@ -22,7 +23,7 @@ export class TaskService {
   ) {}
 
   async getTaskById(id: number): Promise<TaskDto> {
-    return await this.taskRepository.findOne(id, { relations: ['users', 'owner'] });
+    return await this.taskRepository.findOne(id, { relations: ['users', 'owner', 'project'] });
   }
 
   async getTasksByProjectId(userId: number, projectId: number): Promise<TaskDto[]> {
@@ -96,7 +97,6 @@ export class TaskService {
 
   async invite(userId: number, payload: TaskInviteDto): Promise<any> {
     const company = await this.companyService.getCompanyById(payload.companyId);
-    
     if (company.owner.id !== userId) {
       throw new BadRequestException(
         'Must be owner to add user to task.',
@@ -111,17 +111,24 @@ export class TaskService {
     }
 
     const task = await this.getTaskById(payload.taskId);
-    if (company.users.filter(user => user.id === userId)) {
+    const userFound = await task.users.filter(u => u.id === user.id);
+    if (userFound.length > 0) {
       throw new BadRequestException(
         'User already added to task.',
       );
     }
+    
+    await getConnection()
+          .createQueryBuilder()
+          .relation(Task, 'users')
+          .of(task)
+          .add(user);
 
     await getConnection()
-            .createQueryBuilder()
-            .relation(Task, 'users')
-            .of(task)
-            .add(user);
+          .createQueryBuilder()
+          .relation(Project, 'users')
+          .of(task.project)
+          .add(user);
 
     const result = await this.emailService.sendTaskInviteNotification(payload.email, task.taskTitle);
     return result;
