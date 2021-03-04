@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Status } from '../task.entity';
+import { TaskStatus } from '../task.entity';
 
 export class TaskPatchDto {
   @ApiProperty({
@@ -15,7 +15,7 @@ export class TaskPatchDto {
   @ApiProperty({
     required: false,
   })
-  status: Status;
+  status: TaskStatus;
 
   @ApiProperty({
     required: false,

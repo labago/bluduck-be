@@ -25,6 +25,9 @@ export class Project {
   @ManyToOne(type => Company, company => company.projects, { onDelete: 'CASCADE' })
   company: Company;
 
+  @Column({ default: 0})
+  percentComplete: number;
+
   @OneToMany(type => Task, task => task.project)
   tasks?: Task[];
 

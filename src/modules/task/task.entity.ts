@@ -4,7 +4,7 @@ import { Project } from 'modules/project/project.entity';
 import { User } from 'modules/user/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, BeforeInsert, ManyToOne, JoinTable, ManyToMany } from 'typeorm';
 
-export enum Status {
+export enum TaskStatus {
   TODO,
   IN_PROGRESS,
   DONE,
@@ -25,8 +25,8 @@ export class Task {
   @IsDate()
   date: Date;
 
-  @Column({ nullable: false, enum: Status, default: () => Status.TODO })
-  status: Status;
+  @Column({ nullable: false, enum: TaskStatus, default: () => TaskStatus.TODO })
+  status: TaskStatus;
 
   @ManyToOne(type => Project, project => project.tasks, { onDelete: 'CASCADE' })
   project: Project;
