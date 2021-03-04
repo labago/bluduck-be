@@ -131,6 +131,6 @@ export class TaskService {
           .add(user);
 
     const result = await this.emailService.sendTaskInviteNotification(payload.email, task.taskTitle);
-    return result;
+    return { status: 200, message: 'Successfully added user to task'};
   }
 }
