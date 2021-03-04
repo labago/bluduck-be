@@ -8,5 +8,8 @@ export class ProjectPatchDto {
     dueDate: Date;
 
     @ApiProperty()
-    latestUpdate: Date
+    latestUpdate: Date;
+
+    @ApiProperty()
+    percentComplete: number;
 }

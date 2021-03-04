@@ -2,14 +2,14 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { InjectRepository } from '@nestjs/typeorm';
 import { CompanyService } from 'modules/company';
 import { EmailService } from 'modules/email';
-import { ProjectService } from 'modules/project';
+import { ProjectDto, ProjectPatchDto, ProjectService } from 'modules/project';
 import { Project } from '../project/project.entity';
-import { UserService } from 'modules/user';
+import { UserPatchDto, UserService } from 'modules/user';
 import { getConnection, Repository, Transaction } from 'typeorm';
 import { TaskDto, TaskPatchDto } from './dto';
 import { TaskCreateDto } from './dto/task.create.dto';
 import { TaskInviteDto } from './dto/task.invite.dto';
-import { Task } from './task.entity';
+import { Task, TaskStatus } from './task.entity';
 
 @Injectable()
 export class TaskService {
@@ -23,7 +23,7 @@ export class TaskService {
   ) {}
 
   async getTaskById(id: number): Promise<TaskDto> {
-    return await this.taskRepository.findOne(id, { relations: ['users', 'owner', 'project', 'project.users'] });
+    return await this.taskRepository.findOne(id, { relations: ['users', 'owner', 'project', 'project.company', 'project.users', 'project.tasks'] });
   }
 
   async getTasksByProjectId(userId: number, projectId: number): Promise<TaskDto[]> {
@@ -78,12 +78,13 @@ export class TaskService {
     const task = await this.getTaskById(taskId);
     const userFound = await task.users.filter(user => user.id === userId)[0];
     const owner = await this.userService.get(userId);
+    const project = await this.projectService.getProjectById(task.project.id);
 
     if (!userFound && !owner) {
       throw new NotFoundException('Only owner and users added to task can perform this action.');
     }
     await this.taskRepository.update({ id: taskId }, payload);
-    return this.getTaskById(taskId);
+    return await this.updateProjectCompletion(task.project);
   }
 
   async delete(userId: number, taskId: number): Promise<any> {
@@ -135,5 +136,22 @@ export class TaskService {
 
     const result = await this.emailService.sendTaskInviteNotification(payload.email, task.taskTitle);
     return { status: 200, message: 'Successfully added user to task'};
+  }
+
+  private async updateProjectCompletion(project: Project): Promise<any> {    
+    if (project.tasks?.length > 0) {
+      let tasksDone = 0;
+      project.tasks?.forEach(task => {
+        if (task.status === TaskStatus.DONE) {
+          tasksDone++;
+        }
+      });
+      let taskPercentage = tasksDone / project.tasks.length;
+      const projectPatchDto = new ProjectPatchDto();
+      projectPatchDto.percentComplete = taskPercentage;
+      const company = await this.companyService.getCompanyById(project.company.id);
+      await this.projectService.patch(company.owner.id, project.id, projectPatchDto);
+      return await this.companyService.getCompanyById(project.company.id);
+    }    
   }
 }

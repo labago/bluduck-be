@@ -27,13 +27,6 @@ export class CompanyService {
     });
   }
 
-  async getCompanyByIdWithProjectUsers(id: number): Promise<Company> {
-    return await this.companyRepository.findOne({
-      where: { id },
-      relations: ["owner", "projects", "projects.tasks", "users"]
-    });
-  }
-
   async getCompanyWithProjects(companyId: number, user: UserDto): Promise<Company> {
     const company = await this.getCompanyById(companyId);
     const userFound = await company.users.filter(u => u.id === user.id)[0];

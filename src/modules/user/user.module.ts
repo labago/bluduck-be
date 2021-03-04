@@ -6,7 +6,6 @@ import { UserController } from './user.controller';
 import { AuthModule } from '../auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { EmailModule } from 'modules/email/email.module';
-import { CompanyModule } from 'modules/company/company.module';
 
 @Module({
   imports: [

@@ -1,7 +1,7 @@
 import { IsDate } from 'class-validator';
 import { Company } from '../company/company.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
-import { Task } from 'modules/task/task.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, OneToMany, ManyToMany, JoinTable, BeforeInsert } from 'typeorm';
+import { Task, TaskStatus } from 'modules/task/task.entity';
 import { User } from 'modules/user/user.entity';
 
 @Entity({
@@ -25,7 +25,7 @@ export class Project {
   @ManyToOne(type => Company, company => company.projects, { onDelete: 'CASCADE' })
   company: Company;
 
-  @Column({ default: 0})
+  @Column("decimal", { precision: 5, scale: 2, default: 0})
   percentComplete: number;
 
   @OneToMany(type => Task, task => task.project)
