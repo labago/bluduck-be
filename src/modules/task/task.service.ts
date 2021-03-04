@@ -23,7 +23,7 @@ export class TaskService {
   ) {}
 
   async getTaskById(id: number): Promise<TaskDto> {
-    return await this.taskRepository.findOne(id, { relations: ['users', 'owner', 'project'] });
+    return await this.taskRepository.findOne(id, { relations: ['users', 'owner', 'project', 'project.users'] });
   }
 
   async getTasksByProjectId(userId: number, projectId: number): Promise<TaskDto[]> {
@@ -124,11 +124,14 @@ export class TaskService {
           .of(task)
           .add(user);
 
-    await getConnection()
-          .createQueryBuilder()
-          .relation(Project, 'users')
-          .of(task.project)
-          .add(user);
+    const userFoundInProject = await task.project?.users?.filter(u => u.id === user.id);
+    if (!userFoundInProject) {
+      await getConnection()
+      .createQueryBuilder()
+      .relation(Project, 'users')
+      .of(task.project)
+      .add(user);
+    }
 
     const result = await this.emailService.sendTaskInviteNotification(payload.email, task.taskTitle);
     return { status: 200, message: 'Successfully added user to task'};
