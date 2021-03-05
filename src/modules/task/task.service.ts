@@ -75,15 +75,15 @@ export class TaskService {
   }
 
   async patch(userId: number, taskId: number, payload: TaskPatchDto): Promise<TaskDto> {
-    const task = await this.getTaskById(taskId);
+    let task = await this.getTaskById(taskId);
     const userFound = await task.users.filter(user => user.id === userId)[0];
     const owner = await this.userService.get(userId);
-    const project = await this.projectService.getProjectById(task.project.id);
 
     if (!userFound && !owner) {
       throw new NotFoundException('Only owner and users added to task can perform this action.');
     }
     await this.taskRepository.update({ id: taskId }, payload);
+    task = await this.getTaskById(taskId);
     return await this.updateProjectCompletion(task.project);
   }
 
@@ -93,7 +93,17 @@ export class TaskService {
     if (userId !== task.owner.id) {
       throw new UnauthorizedException('Only owners of task can delete task.'); 
     }
-    return await this.taskRepository.delete(taskId);;
+    return await this.taskRepository.delete(taskId);
+  }
+
+  async removeUser(ownerId: number, taskId: number, userId: number): Promise<any> {
+    const task = await this.getTaskById(taskId);    
+
+    if (ownerId !== task.owner.id) {
+      throw new UnauthorizedException('Only owners of task can remove other users.'); 
+    }
+
+    return await this.taskRepository.delete(taskId);
   }
 
   async invite(userId: number, payload: TaskInviteDto): Promise<any> {
@@ -139,19 +149,19 @@ export class TaskService {
   }
 
   private async updateProjectCompletion(project: Project): Promise<any> {    
-    if (project.tasks?.length > 0) {
       let tasksDone = 0;
       project.tasks?.forEach(task => {
         if (task.status === TaskStatus.DONE) {
           tasksDone++;
         }
       });
-      let taskPercentage = tasksDone / project.tasks.length;
+      const percent =  tasksDone / project.tasks.length;
+      let taskPercentage = (percent !== Infinity ? percent : 0);
       const projectPatchDto = new ProjectPatchDto();
       projectPatchDto.percentComplete = taskPercentage;
       const company = await this.companyService.getCompanyById(project.company.id);
       await this.projectService.patch(company.owner.id, project.id, projectPatchDto);
       return await this.companyService.getCompanyById(project.company.id);
-    }    
+  
   }
 }
