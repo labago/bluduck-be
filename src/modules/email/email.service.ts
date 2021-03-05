@@ -93,7 +93,7 @@ export class EmailService {
                 to: recipient,
                 subject: `Forgot password request`,
                 text: '',
-                html: `<p>Forgotten your password? Not a problem, <a href="${this.host}/forgotPassword?token=${hash}&email=${recipient}">click here</a> to reset your password. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
+                html: `<p>Forgotten your password? Not a problem, <a href="${this.host}/reset?token=${hash}&email=${recipient}">click here</a> to reset your password. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
             });
             return result.messageId;
         } catch(e) {
