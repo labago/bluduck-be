@@ -44,7 +44,7 @@ export class User {
   @Exclude({ toPlainOnly: true })
   password: string;
 
-  @ManyToOne(type => Company, company => company.projects)
+  @ManyToOne(type => Company)
   company: Company;
 
   // exclude password when retrieving model

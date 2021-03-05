@@ -35,10 +35,6 @@ export class Project {
   @JoinTable()
   users: User[];
 
-  // @ManyToMany(() => Task)
-  // @JoinTable()
-  // tasks: Task[];
-
   @CreateDateColumn({ nullable: true, type: 'timestamp', default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: Date;
 }

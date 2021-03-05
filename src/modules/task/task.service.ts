@@ -96,14 +96,20 @@ export class TaskService {
     return await this.taskRepository.delete(taskId);
   }
 
-  async removeUser(ownerId: number, taskId: number, userId: number): Promise<any> {
-    const task = await this.getTaskById(taskId);    
-
+  async removeUser(ownerId: number, payload: TaskInviteDto): Promise<TaskDto> {
+    const task = await this.getTaskById(payload.taskId);    
+    
     if (ownerId !== task.owner.id) {
       throw new UnauthorizedException('Only owners of task can remove other users.'); 
     }
+    const user = await this.userService.getByEmail(payload.email);
+    await getConnection()
+          .createQueryBuilder()
+          .relation(Task, 'users')
+          .of(task)
+          .remove(user);
 
-    return await this.taskRepository.delete(taskId);
+    return await this.getTaskById(payload.taskId);
   }
 
   async invite(userId: number, payload: TaskInviteDto): Promise<any> {
@@ -144,7 +150,7 @@ export class TaskService {
       .add(user);
     }
 
-    const result = await this.emailService.sendTaskInviteNotification(payload.email, task.taskTitle);
+    await this.emailService.sendTaskInviteNotification(payload.email, task.taskTitle);
     return { status: 200, message: 'Successfully added user to task'};
   }
 

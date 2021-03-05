@@ -72,5 +72,12 @@ export class TaskController {
     return await this.taskService.invite(id, payload);
   }
 
+  @Post('removeUser')
+  @ApiOperation({ summary: "Remove user from a task." })
+  @ApiResponse({ status: 201, description: 'Successfully removed user from task.' })
+  async removeUser(@Request() req: any, @Body() payload: TaskInviteDto): Promise<any> {
+    const { id } = req.user;
+    return await this.taskService.removeUser(id, payload);
+  }
 }
   
