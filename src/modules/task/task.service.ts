@@ -142,8 +142,6 @@ export class TaskService {
           .add(user);
 
     const userFoundInProject = await task.project?.users?.filter(u => u.id === user.id);
-    console.log('userFoundInProject', userFoundInProject);
-    console.log('userFoundInProject', userFoundInProject.length);
     if (!userFoundInProject || userFoundInProject.length <= 0) {
       await getConnection()
       .createQueryBuilder()
