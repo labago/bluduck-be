@@ -113,25 +113,26 @@ export class CompanyService {
       );
     }
 
-    try {
-      const owner = await this.userService.get(payload.ownerId);
-    
-      const company = await this.companyRepository.save(
-                              this.companyRepository.create({
-                                companyName,
-                                owner,
-                                userLimit: payload.userLImit,
-                                projectLimit: payload.projectLimit,
-                                taskLimit: payload.taskLimit
-                              }));
-      return await getConnection()
-                    .createQueryBuilder()
-                    .relation(Company, 'users')
-                    .of(company)
-                    .add(owner);
-    } catch (e) {
-      
-    }    
+  
+    const owner = await this.userService.get(payload.ownerId);
+  
+    const company = await this.companyRepository.save(
+                            this.companyRepository.create({
+                              companyName,
+                              owner,
+                              userLimit: payload.userLImit,
+                              projectLimit: payload.projectLimit,
+                              taskLimit: payload.taskLimit
+                            }));
+    await getConnection()
+            .createQueryBuilder()
+            .relation(Company, 'users')
+            .of(company)
+            .add(owner); 
+    const userPatchDto = new UserPatchDto();
+    userPatchDto.company = company;                            
+    await this.userService.patch(owner.id, userPatchDto);
+    return { status: 200, message: 'Successfully added owner to company.'}  
   }
 
   async patch(req: any, companyId, payload: CompanyPatchDto): Promise<any> {

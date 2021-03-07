@@ -80,6 +80,36 @@ export class EmailService {
         }
     }
 
+    async sendTaskRemoveNotification(recipient: string, taskName: string): Promise<any> {
+        try {
+            const result = await this.transporter.sendMail({
+                from: this.fromAddy,
+                to: recipient,
+                subject: `You have been removed from task ${taskName}`,
+                text: '',
+                html: `<p>You have been removed from task ${taskName}. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
+            });
+            return result.messageId;
+        } catch(e) {
+            throw new BadRequestException(e);
+        }
+    }
+
+    async sendTaskUpdateNotification(recipient: string, taskName: string): Promise<any> {
+        try {
+            const result = await this.transporter.sendMail({
+                from: this.fromAddy,
+                to: recipient,
+                subject: `${taskName} task has been updated`,
+                text: '',
+                html: `<p>${taskName} task has been updated. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
+            });
+            return result.messageId;
+        } catch(e) {
+            throw new BadRequestException(e);
+        }
+    }
+
     async sendForgotPasswordEmail(recipient: string): Promise<any> {
         try {
             const hash = Hash.make(recipient);

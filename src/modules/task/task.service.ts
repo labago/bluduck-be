@@ -84,6 +84,9 @@ export class TaskService {
     }
     await this.taskRepository.update({ id: taskId }, payload);
     task = await this.getTaskById(taskId);
+    task.users.forEach(user => {
+      this.emailService.sendTaskUpdateNotification(user.email, task.taskTitle);
+    });
     return await this.updateProjectCompletion(task.project);
   }
 
@@ -108,7 +111,8 @@ export class TaskService {
           .relation(Task, 'users')
           .of(task)
           .remove(user);
-
+    
+    await this.emailService.sendTaskRemoveNotification(payload.email, task.taskTitle);
     return await this.getTaskById(payload.taskId);
   }
 
