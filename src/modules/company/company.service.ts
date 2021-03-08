@@ -38,6 +38,7 @@ export class CompanyService {
 
 
   async getAllCompaniesByUser({ id }: UserDto): Promise<CompanyDto[]> {
+    console.log('wtf', id);
     const companies = await this.companyRepository.find({ relations:['users', 'projects', 'projects.users'] });
     let companyList = [];
     companies.forEach(company => {

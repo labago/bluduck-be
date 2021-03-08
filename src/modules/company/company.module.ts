@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Company } from './company.entity';
 import { CompanyService } from './company.service';
@@ -10,7 +10,7 @@ import { EmailModule } from 'modules/email';
 
 @Module({
   imports: [
-    AuthModule,
+    forwardRef(() => AuthModule),
     UserModule,
     PassportModule,
     EmailModule,

@@ -7,12 +7,14 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { EmailModule } from 'modules/email';
+import { CompanyModule } from 'modules/company';
 
 @Module({
   imports: [
     forwardRef(() => UserModule),
     ConfigModule,
     EmailModule,
+    forwardRef(() => CompanyModule),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

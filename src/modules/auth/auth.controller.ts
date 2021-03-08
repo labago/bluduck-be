@@ -17,13 +17,15 @@ import { ChangePasswordPayload } from './changePassword.payload';
 import { UserDto } from 'modules/user';
 import { ForgotPasswordPayload } from './forgotPassword.payload';
 import { ForgotPasswordChangePayload } from './forgotPasswordChange.payload';
+import { CompanyService } from 'modules/company/company.service';
 
 @Controller('api/auth')
 @ApiTags('authentication')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly companyService: CompanyService
   ) {}
 
   @Post('login')
@@ -84,7 +86,8 @@ export class AuthController {
   @Get('me')
   @ApiResponse({ status: 200, description: 'Successful Response' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getLoggedInUser(@Request() request): Promise<any> {
-    return await this.userService.get(request.user.id);
+  async getLoggedInUser(@Request() req: any): Promise<any> {
+    const user = req.user as UserDto;
+    return await this.companyService.getAllCompaniesByUser(user);
   }
 }
