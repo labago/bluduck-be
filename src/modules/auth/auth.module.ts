@@ -35,6 +35,6 @@ import { CompanyModule } from 'modules/company';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
-  exports: [PassportModule.register({ defaultStrategy: 'jwt' })]
+  exports: [JwtStrategy, PassportModule.register({ defaultStrategy: 'jwt' })]
 })
 export class AuthModule {}

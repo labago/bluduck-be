@@ -4,10 +4,10 @@ import { EmailService } from 'modules/email';
 import { Hash } from '../../utils/Hash';
 import { ConfigService } from './../config';
 import { User, UserService } from './../user';
-import { ChangePasswordPayload } from './changePassword.payload';
-import { ForgotPasswordPayload } from './forgotPassword.payload';
-import { ForgotPasswordChangePayload } from './forgotPasswordChange.payload';
-import { LoginPayload } from './login.payload';
+import { ChangePasswordPayload } from './dto/changePassword.payload';
+import { ForgotPasswordPayload } from './dto/forgotPassword.payload';
+import { ForgotPasswordChangePayload } from './dto/forgotPasswordChange.payload';
+import { LoginPayload } from './dto/login.payload';
 
 @Injectable()
 export class AuthService {
@@ -21,13 +21,13 @@ export class AuthService {
   async createToken(user: User) {
     return {
       expiresIn: this.configService.get('JWT_EXPIRATION_TIME'),
-      accessToken: this.jwtService.sign({ id: user.id, verified: user.isVerified, isAdmin: user.isAdmin }),
+      accessToken: this.jwtService.sign({ id: user.id, isVerified: user.isVerified, isAdmin: user.isAdmin }),
       user,
     };
   }
 
   async login(payload: LoginPayload): Promise<any> {
-    const user = await this.userService.getByEmail(payload.email);
+    const user = await this.userService.getByEmailForLogin(payload.email);
     if (!user || !Hash.compare(payload.password, user.password)) {
       throw new UnauthorizedException('Invalid credentials');
     }

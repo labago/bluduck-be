@@ -1,4 +1,4 @@
-import { Module, UseInterceptors } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod, UseInterceptors } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from './../config';
@@ -7,8 +7,11 @@ import { UserModule } from './../user/user.module';
 import { CompanyModule } from './../company/company.module';
 import { ProjectModule } from './../project/project.module';
 import { EmailModule } from 'modules/email/email.module';
-import { TaskModule } from 'modules/task';
+import { TaskController, TaskModule } from 'modules/task';
 import { CommonModule } from 'modules/common';
+import { UserVerifiedMiddleware } from 'modules/common/middleware/userVerified.middleware';
+import { CompanyController } from 'modules/company/company.controller';
+import { ProjectController } from 'modules/project/project.controller';
 
 @Module({
   imports: [
@@ -39,4 +42,12 @@ import { CommonModule } from 'modules/common';
   ],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(UserVerifiedMiddleware)
+      .forRoutes(CompanyController, 
+                  ProjectController,
+                  TaskController);
+  }
+}

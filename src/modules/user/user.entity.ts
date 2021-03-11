@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, Be
 import { PasswordTransformer } from './password.transformer';
 import { Company } from '../company/company.entity';
 
-export enum UserAccess {
+export enum UserRole {
   USER,
   MANAGER
 }
@@ -59,8 +59,8 @@ export class User {
   //   return self;
   // }
 
-  @Column({ nullable: false, enum: UserAccess, default: () => UserAccess.USER })
-  userAccess: UserAccess;
+  @Column({ nullable: false, enum: UserRole, default: () => UserRole.USER })
+  userRole: UserRole;
 
   @Column({nullable: false, default: false})
   isAdmin: boolean;

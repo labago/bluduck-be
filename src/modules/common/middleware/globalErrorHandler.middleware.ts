@@ -6,6 +6,7 @@ import { catchError } from 'rxjs/operators';
 @Injectable()
 export class GlobalErrorHandler implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    // console.log(req);
     // next.handle() is an Observable of the controller's result value
     return next.handle()
     .pipe(catchError(error => {
