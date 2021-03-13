@@ -17,17 +17,21 @@ export class UserRoleGuard implements CanActivate {
             return true;
         }
         const req = context.switchToHttp().getRequest();
-        const authHeaders = req.headers.authorization;
-        if (authHeaders && (authHeaders as string).split(' ')[1]) {
-            const token = (authHeaders as string).split(' ')[1];
-            const secret = this.configService.get('JWT_SECRET_KEY');
-            const decoded: any = jwt.verify(token, secret);
-            const user = await this.userService.get(decoded.id);
-            const hasRole = () => !!userRole.find(item => item === user.userRole);
-            return user && user.userRole && hasRole();
-        } else {
-            throw new UnauthorizedException('User must be logged in to perform this action.');
-        }
+        const user = req.user;
+        const hasRole = () => !!userRole.find(item => item === user.userRole);
+        return user && user.userRole && hasRole();
+        
+        // const authHeaders = req.headers.authorization;
+        // if (authHeaders && (authHeaders as string).split(' ')[1]) {
+        //     const token = (authHeaders as string).split(' ')[1];
+        //     const secret = this.configService.get('JWT_SECRET_KEY');
+        //     const decoded: any = jwt.verify(token, secret);
+        //     const user = await this.userService.get(decoded.id);
+        //     const hasRole = () => !!userRole.find(item => item === user.userRole);
+        //     return user && user.userRole && hasRole();
+        // } else {
+        //     throw new UnauthorizedException('User must be logged in to perform this action.');
+        // }
         
     }
 }

@@ -7,13 +7,13 @@ import {
   Request,
   Param
 } from '@nestjs/common';
-import { ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiResponse, ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './../user/user.service';
 import { UserPatchDto } from './dto/user.patch.dto';
 import { UnauthorizedException } from '@nestjs/common';
 import { UserRolePatchDto } from './dto/userRole.patch.dto';
-import { UserRole } from 'modules/common';
+import { UserRole } from 'modules/common/userRole/userRole.decorator';
 import { UserRoleEnum } from '.';
 
 @Controller('api/user')
@@ -28,12 +28,14 @@ export class UserController {
   ) {}
 
   @Get()
+  @ApiOperation({ summary: "Retrieve user info." })
   @ApiResponse({ status: 201, description: 'Successfully retrieved user.' })
   async userGet(@Request() req): Promise<any> {   
     return await this.userService.get(req.user.id);
   }
 
   @Get('all')
+  @ApiOperation({ summary: "**ADMIN ONLY** Retrieve all users." })
   @UserRole(UserRoleEnum.ADMIN)
   @ApiResponse({ status: 201, description: 'Successfully retrieved all users.' })
   async userGetAll(): Promise<any> {   
@@ -42,6 +44,7 @@ export class UserController {
 
 
   @Patch(':id')
+  @ApiOperation({ summary: "Update user info." })
   @ApiResponse({ status: 201, description: 'Successfully updated user.' })
   async userPatch(@Request() req, @Param('id') id: any, @Body() payload: UserPatchDto): Promise<any> {
     if (parseInt(req.user.id) !== parseInt(id)) {
@@ -51,6 +54,7 @@ export class UserController {
   }
 
   @Patch(':id/userRole')
+  @ApiOperation({ summary: "**ADMIN ONLY** Update user role." })
   @UserRole(UserRoleEnum.ADMIN)
   @ApiResponse({ status: 201, description: 'Successfully updated user role.' })
   async userRole(@Param('id') id: any, @Body() payload: UserRolePatchDto): Promise<any> {
@@ -58,6 +62,7 @@ export class UserController {
   }
 
   @Get('userRoles')
+  @ApiOperation({ summary: "Retrieve user roles." })
   @ApiResponse({ status: 200, description: 'Successful Response' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getUserRoles(): Promise<any> {
