@@ -33,6 +33,13 @@ export class UserController {
     return await this.userService.get(req.user.id);
   }
 
+  @Get('all')
+  @UserRole(UserRoleEnum.ADMIN)
+  @ApiResponse({ status: 201, description: 'Successfully retrieved all users.' })
+  async userGetAll(): Promise<any> {   
+    return await this.userService.getAllUsers();
+  }
+
 
   @Patch(':id')
   @ApiResponse({ status: 201, description: 'Successfully updated user.' })

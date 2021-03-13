@@ -38,6 +38,15 @@ export class CompanyController {
     return await this.companyService.getAllCompaniesByUser(user);
   }
 
+  @Get('/all')
+  @UserRole(UserRoleEnum.ADMIN)
+  @ApiOperation({ summary: "**ADMIN ONLY** Retrieve all companies." })
+  @ApiResponse({ status: 201, description: 'Successfully retrieved companies.' })
+  async getAll(@Request() req: any): Promise<any> {
+    const user = req.user as UserDto;
+    return await this.companyService.getAllCompanies(user);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: "Retrieve a company by id owned by user." })
   @ApiResponse({ status: 201, description: 'Successfully retrieved company.' })

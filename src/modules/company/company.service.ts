@@ -10,6 +10,7 @@ import { CompanyCreateDto } from './dto/company.create.dto';
 import { CompanyPatchDto } from './dto/company.patch.dto';
 import { CompanyInviteDto } from './dto/company.invite.dto';
 import { EmailService } from 'modules/email';
+import { UserRoleEnum } from 'modules/user';
 
 @Injectable()
 export class CompanyService {
@@ -36,6 +37,9 @@ export class CompanyService {
     return company;
   }
 
+  async getAllCompanies({ id }: UserDto): Promise<any> {    
+    return await this.companyRepository.find();
+  }
 
   async getAllCompaniesByUser({ id }: UserDto): Promise<any> {
     const user = await this.userService.get(id);
