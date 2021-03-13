@@ -56,5 +56,16 @@ export class UserController {
   async userRole(@Param('id') id: any, @Body() payload: UserRolePatchDto): Promise<any> {
     return await this.userService.patchRole(id, payload);
   }
+
+  @Get('userRoles')
+  @ApiResponse({ status: 200, description: 'Successful Response' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getUserRoles(): Promise<any> {
+    return {
+      'User': 0,
+      'Manager': 1,
+      'Admin': 2
+    };
+  }
 }
   
