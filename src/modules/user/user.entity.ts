@@ -3,9 +3,10 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToMany, Be
 import { PasswordTransformer } from './password.transformer';
 import { Company } from '../company/company.entity';
 
-export enum UserRole {
+export enum UserRoleEnum {
   USER,
-  MANAGER
+  MANAGER,
+  ADMIN
 }
 
 @Entity({
@@ -53,17 +54,8 @@ export class User {
   @ManyToMany(type => Company, company => company.users)
   companies: Company[];
 
-  // // exclude password when retrieving model
-  // toJSON() {
-  //   const { password, ...self } = this;
-  //   return self;
-  // }
-
-  @Column({ nullable: false, enum: UserRole, default: () => UserRole.USER })
-  userRole: UserRole;
-
-  @Column({nullable: false, default: false})
-  isAdmin: boolean;
+  @Column({ nullable: false, enum: UserRoleEnum, default: () => UserRoleEnum.USER })
+  userRole: UserRoleEnum;
 
   @CreateDateColumn({ nullable: true, type: 'timestamp', default: () => "CURRENT_TIMESTAMP(6)" })
   createdAt: Date;

@@ -109,13 +109,6 @@ export class CompanyService {
       );
     }
 
-    if (!user.isAdmin) {
-      throw new NotFoundException(
-        'User must be admin to create company.',
-      );
-    }
-
-  
     const owner = await this.userService.get(payload.ownerId);
   
     const company = await this.companyRepository.save(
@@ -139,9 +132,6 @@ export class CompanyService {
 
   async patch(req: any, companyId, payload: CompanyPatchDto): Promise<any> {
     const user = await this.userService.get(req.user.id);
-    if (!user.isAdmin) {
-      throw new UnauthorizedException('Only admins may make changes to company.'); 
-    }
     await this.companyRepository.update({ id: companyId }, payload);
     return await this.companyRepository.findOne(companyId);
   }

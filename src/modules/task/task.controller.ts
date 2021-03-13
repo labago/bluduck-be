@@ -7,16 +7,16 @@ import {
   Delete,
   UseGuards,
   Request,
-  Param,
-  UseInterceptors
+  Param
 } from '@nestjs/common';
-import { ApiResponse, ApiTags, ApiBearerAuth, ApiOperation, ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { TaskService } from './task.service';
 import { TaskCreateDto } from './dto/task.create.dto';
 import { TaskPatchDto } from './dto';
-import { GlobalErrorHandler } from 'modules/common/middleware/globalErrorHandler.middleware';
 import { TaskInviteDto } from './dto/task.invite.dto';
+import { UserRole } from 'modules/common';
+import { UserRoleEnum } from 'modules/user';
 
 @Controller('api/task')
 @ApiTags('task')
@@ -39,6 +39,7 @@ export class TaskController {
   }
 
   @Post()
+  @UserRole(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: "Create a task." })
   @ApiResponse({ status: 201, description: 'Successfully added task.' })
   async create(@Request() req: any, @Body() payload: TaskCreateDto): Promise<any> {
@@ -57,6 +58,7 @@ export class TaskController {
   }
 
   @Delete(':id')
+  @UserRole(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: "Delete a task." })
   @ApiResponse({ status: 201, description: 'Successfully deleted task.' })
   async delete(@Param('id') taskId: number, @Request() req): Promise<any> {

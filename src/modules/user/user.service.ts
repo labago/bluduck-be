@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { UserPatchDto, UserCredentialsDto, UserDto } from './dto';
 import { EmailService } from 'modules/email/email.service';
+import { UserRolePatchDto } from './dto/userRole.patch.dto';
 
 @Injectable()
 export class UserService {
@@ -48,6 +49,20 @@ export class UserService {
   }
 
   async patch(userId: number, payload: UserPatchDto): Promise<UserDto> {
+    const user = await this.get(userId);
+    if (!user) {
+      throw new NotFoundException(
+        'No user exists.',
+      );
+    }
+
+    const { id } = user;    
+    await this.userRepository.update({ id }, payload);
+    const newUser = await this.get(id);
+    return newUser;
+  }
+
+  async patchRole(userId: number, payload: UserRolePatchDto): Promise<UserDto> {
     const user = await this.get(userId);
     if (!user) {
       throw new NotFoundException(

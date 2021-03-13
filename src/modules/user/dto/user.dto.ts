@@ -1,4 +1,5 @@
 import { Company } from "modules/company/company.entity";
+import { UserRoleEnum } from "../user.entity";
 
 export class UserDto {
     id: number;
@@ -8,8 +9,7 @@ export class UserDto {
     phoneNumber: string;
     avatarColor: string;
     role: string;
-    userRole: number;
+    userRole: UserRoleEnum;
     companies: Company[];
     isVerified: boolean;
-    isAdmin: boolean;
 }

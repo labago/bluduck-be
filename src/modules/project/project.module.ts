@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { CompanyModule } from '../company';
 import { UserModule } from '../user';
 import { PassportModule } from '@nestjs/passport';
+import { ConfigModule } from 'modules/config';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PassportModule } from '@nestjs/passport';
     UserModule,
     CompanyModule,
     PassportModule,
+    ConfigModule,
     TypeOrmModule.forFeature([Project])],
   exports: [ProjectService],
   controllers: [ProjectController],

@@ -14,11 +14,15 @@ import { AuthGuard } from '@nestjs/passport';
 import { ProjectService } from './project.service';
 import { ProjectCreateDto } from './dto/project.create.dto';
 import { ProjectPatchDto } from './dto/project.patch.dto';
+import { UserRoleGuard } from 'modules/common/userRole/userRole.guard';
+import { UserRole } from 'modules/common';
+import { UserRoleEnum } from 'modules/user/user.entity';
 
 @Controller('api/project')
 @ApiTags('project')
 @ApiBearerAuth()
 @UseGuards(AuthGuard())
+@UseGuards(UserRoleGuard)
 @ApiResponse({ status: 400, description: 'Bad Request' })
 @ApiResponse({ status: 401, description: 'Unauthorized' })
 export class ProjectController {
@@ -35,6 +39,7 @@ export class ProjectController {
   }
 
   @Post()
+  @UserRole(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: "Create a project." })
   @ApiResponse({ status: 201, description: 'Successfully added project.' })
   async create(@Request() req: any, @Body() payload: ProjectCreateDto): Promise<any> {
@@ -53,6 +58,7 @@ export class ProjectController {
   }
 
   @Delete(':id')
+  @UserRole(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: "Delete a project." })
   @ApiResponse({ status: 201, description: 'Successfully deleted project.' })
   async delete(@Request() req, @Param('id') projectId: number): Promise<any> {

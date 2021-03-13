@@ -12,6 +12,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './../user/user.service';
 import { UserPatchDto } from './dto/user.patch.dto';
 import { UnauthorizedException } from '@nestjs/common';
+import { UserRolePatchDto } from './dto/userRole.patch.dto';
+import { UserRole } from 'modules/common';
+import { UserRoleEnum } from '.';
 
 @Controller('api/user')
 @ApiTags('user')
@@ -38,6 +41,13 @@ export class UserController {
       throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis profile');
     }
     return await this.userService.patch(id, payload);
+  }
+
+  @Patch(':id/userRole')
+  @UserRole(UserRoleEnum.ADMIN)
+  @ApiResponse({ status: 201, description: 'Successfully updated user role.' })
+  async userRole(@Param('id') id: any, @Body() payload: UserRolePatchDto): Promise<any> {
+    return await this.userService.patchRole(id, payload);
   }
 }
   

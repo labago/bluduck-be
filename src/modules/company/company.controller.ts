@@ -16,6 +16,8 @@ import { UserDto } from '../user/dto';
 import { CompanyCreateDto } from './dto/company.create.dto';
 import { CompanyPatchDto } from './dto/company.patch.dto';
 import { CompanyInviteDto } from './dto/company.invite.dto';
+import { UserRoleEnum } from 'modules/user';
+import { UserRole } from 'modules/common';
 
 @Controller('api/company')
 @ApiTags('company')
@@ -53,6 +55,7 @@ export class CompanyController {
   }
 
   @Post()
+  @UserRole(UserRoleEnum.ADMIN)
   @ApiOperation({ summary: "**ADMIN ONLY** Create a company." })
   @ApiResponse({ status: 201, description: 'Successfully added company.' })
   async create(@Request() req: any, @Body() payload: CompanyCreateDto): Promise<any> {
@@ -61,6 +64,7 @@ export class CompanyController {
   }
 
   @Patch(':id')
+  @UserRole(UserRoleEnum.ADMIN)
   @ApiOperation({ summary: "**ADMIN ONLY** Update company info under company <id>." })
   @ApiResponse({ status: 201, description: 'Successfully updated company.' })
   async patch(@Param('id') companyId: number, @Request() req, @Body() payload: CompanyPatchDto): Promise<any> {

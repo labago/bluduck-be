@@ -1,16 +1,16 @@
-import { Global, Module } from '@nestjs/common';
-import { AuthModule } from 'modules/auth';
+import { forwardRef, Global, Module } from '@nestjs/common';
 import { ConfigModule } from 'modules/config';
 import { UserModule } from 'modules/user';
 import { GlobalErrorHandler } from './middleware/globalErrorHandler.middleware';
 import { UserVerifiedMiddleware } from './middleware/userVerified.middleware';
+import { UserRoleGuard } from './userRole/userRole.guard';
 
 @Global()
 @Module({
   imports: [
-    UserModule,
+    forwardRef(() => UserModule),
     ConfigModule
   ],
-  providers: [GlobalErrorHandler, UserVerifiedMiddleware],
+  providers: [GlobalErrorHandler, UserVerifiedMiddleware, UserRoleGuard],
 })
 export class CommonModule {}
