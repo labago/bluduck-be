@@ -15,7 +15,7 @@ import { ProjectService } from './project.service';
 import { ProjectCreateDto } from './dto/project.create.dto';
 import { ProjectPatchDto } from './dto/project.patch.dto';
 import { UserRoleGuard } from 'modules/common/userRole/userRole.guard';
-import { UserRole } from 'modules/common';
+import { UserRole } from 'modules/common/userRole/userRole.decorator';
 import { UserRoleEnum } from 'modules/user/user.entity';
 
 @Controller('api/project')
