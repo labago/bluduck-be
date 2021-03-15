@@ -53,14 +53,9 @@ export class TaskService {
     
   }
 
-  async create(userId: number, payload: TaskCreateDto): Promise<TaskDto> {
+  async create(payload: TaskCreateDto): Promise<TaskDto> {
     const project = await this.projectService.getProjectById(payload.projectId);
     const company = await this.companyService.getCompanyById(project.company.id);    
-    // const userFound = await company.users.filter(user => user.id === userId)[0];
-
-    if (company.owner.id !== userId) {
-      throw new NotFoundException('Only owner in company can create tasks.');
-    }
 
     const task = await this.taskRepository.save(this.taskRepository.create({
       owner: company.owner,
@@ -118,11 +113,6 @@ export class TaskService {
 
   async invite(userId: number, payload: TaskInviteDto): Promise<any> {
     const company = await this.companyService.getCompanyById(payload.companyId);
-    if (company.owner.id !== userId) {
-      throw new BadRequestException(
-        'Must be owner to add user to task.',
-      );
-    }
 
     const user = await this.userService.getByEmail(payload.email);
     if (!user || !user.isVerified) {
