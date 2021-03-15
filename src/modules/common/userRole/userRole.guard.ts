@@ -23,7 +23,7 @@ export class UserRoleGuard implements CanActivate {
             const secret = this.configService.get('JWT_SECRET_KEY');
             const decoded: any = jwt.verify(token, secret);
             const user = await this.userService.get(decoded.id);
-            const hasRole = () => !!userRole.find(item => item === user.userRole);
+            const hasRole = () => !!userRole.some(item => item === user.userRole);
             return user && user.userRole && hasRole();
         } else {
             throw new UnauthorizedException('User must be logged in to perform this action.');
