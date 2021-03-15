@@ -48,6 +48,7 @@ export class ProjectController {
   }
 
   @Patch(':id')
+  @UserRole(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: "Update a project" })
   @ApiResponse({ status: 201, description: 'Successfully updated project.' })
   async patch(@Param('id') projectId: number, 
