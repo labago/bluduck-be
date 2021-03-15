@@ -57,9 +57,6 @@ export class ProjectService {
                               .where('project.id = :id')
                               .setParameter('id', projectId)
                               .getOne();                                                   
-    if (project.company.owner.id !== userId) {
-      throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis project.'); 
-    }
     await this.projectRepository.update({ id: projectId }, payload);
     return await this.getProjectById(projectId);
   }
