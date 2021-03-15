@@ -40,9 +40,6 @@ export class ProjectService {
   async create(userId: number, payload: ProjectCreateDto): Promise<Project> {
     
     const company = await this.companyService.getCompanyById(payload.companyId);
-    if (company.owner.id !== userId) {
-      throw new NotFoundException('Only owner of company can create projects.');
-    }
 
     return await this.projectRepository.save(this.projectRepository.create({
       company,
