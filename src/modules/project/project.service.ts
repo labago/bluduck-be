@@ -69,13 +69,7 @@ export class ProjectService {
   }
 
   async delete(userId: number, projectId: number): Promise<any> {
-    const project = await this.projectRepository
-                              .createQueryBuilder('project')
-                              .leftJoinAndSelect('project.company', 'company')
-                              .leftJoinAndSelect('company.owner', 'owner')
-                              .where('project.id = :id')
-                              .setParameter('id', projectId)
-                              .getOne();                         
+    const project = await this.projectRepository.findOne({ id: projectId }, { relations: ['company', 'company.users'] });     
     const managerFoundInCompany = project.company.users.filter(u => u.id === userId);
 
     if (managerFoundInCompany.length <= 0 && managerFoundInCompany[0].userRole !== UserRoleEnum.ADMIN) {
