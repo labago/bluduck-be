@@ -7,6 +7,7 @@ import { CompanyService } from '../company/company.service';
 import { ProjectDto } from './dto/project.dto';
 import { ProjectPatchDto } from './dto/project.patch.dto';
 import { UserRoleEnum } from 'modules/user/user.entity';
+import { UserRole } from 'modules/common/userRole/userRole.decorator';
 
 @Injectable()
 export class ProjectService {
@@ -22,7 +23,8 @@ export class ProjectService {
 
   async getProjectsByCompany(userId: number, companyId: number): Promise<ProjectDto[]> {
     const company = await this.companyService.getCompanyById(companyId);
-    if (company.users.filter(user => user.id !== userId)) {
+    const userFoundInCompany = await company.users.filter(u => u.id === userId);
+    if (userFoundInCompany.length <= 0 && userFoundInCompany[0].userRole !== UserRoleEnum.ADMIN) {
       throw new NotFoundException('Must be a member of company to retrieve projects.');
     }
     return this.projectRepository.find({
