@@ -53,12 +53,20 @@ export class TaskService {
     
   }
 
-  async create(payload: TaskCreateDto): Promise<TaskDto> {
+  async create(userId: number, payload: TaskCreateDto): Promise<TaskDto> {
+    const user = await this.userService.get(userId);
     const project = await this.projectService.getProjectById(payload.projectId);
     const company = await this.companyService.getCompanyById(project.company.id);    
+    const userFoundInCompany = await company.users.filter(u => u.id === userId);
+
+    if (userFoundInCompany.length <= 0 && user.userRole !== UserRoleEnum.ADMIN) {
+      throw new BadRequestException(
+        'Task creator must belong to company to add people to task.',
+      );
+    }
 
     const task = await this.taskRepository.save(this.taskRepository.create({
-      owner: company.owner,
+      owner: user,
       project: project,
       date: payload.date,
       status: payload.status,

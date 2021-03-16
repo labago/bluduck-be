@@ -42,8 +42,9 @@ export class TaskController {
   @UserRole(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: "Create a task." })
   @ApiResponse({ status: 201, description: 'Successfully added task.' })
-  async create(@Body() payload: TaskCreateDto): Promise<any> {
-    return await this.taskService.create(payload);
+  async create(@Request() req: any, @Body() payload: TaskCreateDto): Promise<any> {
+    const { id } = req.user;
+    return await this.taskService.create(id, payload);
   }
 
   @Patch(':id')
