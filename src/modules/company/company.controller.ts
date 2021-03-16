@@ -17,7 +17,7 @@ import { CompanyCreateDto } from './dto/company.create.dto';
 import { CompanyPatchDto } from './dto/company.patch.dto';
 import { CompanyInviteDto } from './dto/company.invite.dto';
 import { UserRoleEnum } from 'modules/user';
-import { UserRole } from 'modules/common';
+import { UserRole } from 'modules/common/userRole/userRole.decorator';
 
 @Controller('api/company')
 @ApiTags('company')
@@ -35,7 +35,7 @@ export class CompanyController {
   @ApiResponse({ status: 201, description: 'Successfully retrieved companies.' })
   async get(@Request() req: any): Promise<any> {
     const user = req.user as UserDto;
-    return await this.companyService.getAllCompaniesByUser(user);
+    return await this.companyService.getAllCompaniesByOwner(user);
   }
 
   @Get('/all')

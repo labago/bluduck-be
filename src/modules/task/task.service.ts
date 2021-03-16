@@ -4,7 +4,7 @@ import { CompanyService } from 'modules/company';
 import { EmailService } from 'modules/email';
 import { ProjectDto, ProjectPatchDto, ProjectService } from 'modules/project';
 import { Project } from '../project/project.entity';
-import { UserPatchDto, UserService } from 'modules/user';
+import { UserPatchDto, UserRoleEnum, UserService } from 'modules/user';
 import { getConnection, Repository, Transaction } from 'typeorm';
 import { TaskDto, TaskPatchDto } from './dto';
 import { TaskCreateDto } from './dto/task.create.dto';
@@ -73,6 +73,14 @@ export class TaskService {
     let task = await this.getTaskById(taskId);
     const userFound = await task.users.filter(user => user.id === userId)[0];
     const owner = await this.userService.get(userId);
+    const companyId = task.project.company.id;
+    const company = await this.companyService.getCompanyById(companyId);
+    const userFoundInCompany = await company.users.filter(u => u.email === owner.email);
+    if (userFoundInCompany.length <= 0) {
+      throw new BadRequestException(
+        'User must belong to company before updating task.',
+      );
+    }
 
     if (!userFound && !owner) {
       throw new NotFoundException('Only owner and users added to task can perform this action.');
@@ -85,44 +93,77 @@ export class TaskService {
     return await this.updateProjectCompletion(task.project);
   }
 
-  async delete(userId: number, taskId: number): Promise<any> {
-    const task = await this.getTaskById(taskId);    
-
-    if (userId !== task.owner.id) {
-      throw new UnauthorizedException('Only owners of task can delete task.'); 
+  async delete(userId: number, taskId: number): Promise<any> {   
+    const task = await this.getTaskById(taskId);
+    const user = await this.userService.get(userId);
+    const companyId = task.project.company.id;
+    const company = await this.companyService.getCompanyById(companyId);
+    const managerFoundInCompany = await company.users.filter(u => u.id === userId);
+    if (managerFoundInCompany.length <= 0 && user.userRole !== UserRoleEnum.ADMIN) {
+      throw new BadRequestException(
+        'Must belong to company to delete task.',
+      );
     }
-    return await this.taskRepository.delete(taskId);
+    await this.taskRepository.delete(taskId)
+    return { status: 200, message: 'Successfully deleted task.'};
   }
 
-  async removeUser(ownerId: number, payload: TaskInviteDto): Promise<TaskDto> {
+  async removeUser(userId: number, payload: TaskInviteDto): Promise<any> {
     const task = await this.getTaskById(payload.taskId);    
-    
-    if (ownerId !== task.owner.id) {
-      throw new UnauthorizedException('Only owners of task can remove other users.'); 
+    const user = await this.userService.get(userId);
+    const userToBeRemoved = await this.userService.getByEmail(payload.email);
+    const company = await this.companyService.getCompanyById(payload.companyId);
+    const userFoundInCompany = await company.users.filter(u => u.email === userToBeRemoved.email);
+
+    if (userFoundInCompany.length <= 0) {
+      throw new BadRequestException(
+        'User must belong to company before being removed from task.',
+      );
     }
-    const user = await this.userService.getByEmail(payload.email);
+
+    const managerFoundInCompany = await company.users.filter(u => u.id === userId);
+    if (managerFoundInCompany.length <= 0 && user.userRole !== UserRoleEnum.ADMIN) {
+      throw new BadRequestException(
+        'Inviter must belong to company to add people to task.',
+      );
+    }
+
     await getConnection()
           .createQueryBuilder()
           .relation(Task, 'users')
           .of(task)
-          .remove(user);
+          .remove(userToBeRemoved);
     
     await this.emailService.sendTaskRemoveNotification(payload.email, task.taskTitle);
-    return await this.getTaskById(payload.taskId);
+    return { status: 200, message: 'Successfully removed user from  task' };
   }
 
-  async invite(userId: number, payload: TaskInviteDto): Promise<any> {
-    const company = await this.companyService.getCompanyById(payload.companyId);
-
-    const user = await this.userService.getByEmail(payload.email);
-    if (!user || !user.isVerified) {
+  async invite(userId: number, payload: TaskInviteDto): Promise<any> {    
+    const user = await this.userService.get(userId);
+    const userToBeInvited = await this.userService.getByEmail(payload.email);
+    if (!userToBeInvited || !userToBeInvited.isVerified) {
       throw new BadRequestException(
-        'User needs to be registered and verified to join company.',
+        'User needs to be registered and verified to join task.',
+      );
+    }
+
+    const company = await this.companyService.getCompanyById(payload.companyId);
+    const userFoundInCompany = await company.users.filter(u => u.email === userToBeInvited.email);
+    if (userFoundInCompany.length <= 0) {
+      throw new BadRequestException(
+        'User must belong to company before being added to task.',
+      );
+    }
+
+    const managerFoundInCompany = await company.users.filter(u => u.id === userId);
+    if (managerFoundInCompany.length <= 0 && user.userRole !== UserRoleEnum.ADMIN) {
+      throw new BadRequestException(
+        'Inviter must belong to company to add people to task.',
       );
     }
 
     const task = await this.getTaskById(payload.taskId);
-    const userFound = await task.users.filter(u => u.id === user.id);
+    const userFound = await task.users.filter(u => u.id === userToBeInvited.id);
     if (userFound.length > 0) {
       throw new BadRequestException(
         'User already added to task.',
@@ -133,15 +174,15 @@ export class TaskService {
           .createQueryBuilder()
           .relation(Task, 'users')
           .of(task)
-          .add(user);
+          .add(userToBeInvited);
 
-    const userFoundInProject = await task.project?.users?.filter(u => u.id === user.id);
+    const userFoundInProject = await task.project?.users?.filter(u => u.id === userToBeInvited.id);
     if (!userFoundInProject || userFoundInProject.length <= 0) {
       await getConnection()
       .createQueryBuilder()
       .relation(Project, 'users')
       .of(task.project)
-      .add(user);
+      .add(userToBeInvited);
     }
 
     await this.emailService.sendTaskInviteNotification(payload.email, task.taskTitle);

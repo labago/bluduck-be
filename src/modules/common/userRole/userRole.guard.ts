@@ -4,6 +4,7 @@ import { ConfigService } from 'modules/config';
 import { UserRoleEnum } from 'modules/user/user.entity';
 import * as jwt from 'jsonwebtoken';
 import { UserService } from 'modules/user';
+import { CompanyService } from 'modules/company/company.service';
 
 @Injectable()
 export class UserRoleGuard implements CanActivate {

@@ -41,9 +41,8 @@ export class CompanyService {
     return await this.companyRepository.find();
   }
 
-  async getAllCompaniesByUser({ id }: UserDto): Promise<any> {
-    const user = await this.userService.get(id);
-    const companies = await this.companyRepository.find({ relations:['users', 'projects', 'projects.users'] });
+  async getAllCompaniesByOwner({ id }: UserDto): Promise<any> {
+    const companies = await this.companyRepository.find({ relations:['owner', 'users', 'projects', 'projects.users'] });
     let companyList = [];
     companies.forEach(company => {
       const user = company.users.filter(user => user.id === id);
@@ -52,7 +51,7 @@ export class CompanyService {
       }
     });
     
-    return user;
+    return companyList;
   }
 
   async invite(ownerId: number, payload: CompanyInviteDto): Promise<any> {
@@ -88,10 +87,6 @@ export class CompanyService {
         'User already exists in company.',
       );
     }
-
-    const userPatchDto = new UserPatchDto();
-    userPatchDto.company = company;
-    await this.userService.patch(user.id, userPatchDto);
 
     await getConnection()
             .createQueryBuilder()

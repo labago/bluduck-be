@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from './project.entity';
@@ -6,6 +6,7 @@ import { ProjectCreateDto } from './dto/project.create.dto';
 import { CompanyService } from '../company/company.service';
 import { ProjectDto } from './dto/project.dto';
 import { ProjectPatchDto } from './dto/project.patch.dto';
+import { UserRoleEnum } from 'modules/user/user.entity';
 
 @Injectable()
 export class ProjectService {
@@ -38,8 +39,14 @@ export class ProjectService {
   }
 
   async create(userId: number, payload: ProjectCreateDto): Promise<Project> {
-    
     const company = await this.companyService.getCompanyById(payload.companyId);
+    const managerFoundInCompany = await company.users.filter(u => u.id === userId);
+    
+    if (managerFoundInCompany.length <= 0 && managerFoundInCompany[0].userRole !== UserRoleEnum.ADMIN) {
+      throw new BadRequestException(
+        'Must belong to company to create a project.',
+      );
+    }
 
     return await this.projectRepository.save(this.projectRepository.create({
       company,
@@ -68,10 +75,15 @@ export class ProjectService {
                               .leftJoinAndSelect('company.owner', 'owner')
                               .where('project.id = :id')
                               .setParameter('id', projectId)
-                              .getOne();                                                   
-    if (project.company.owner.id !== userId) {
-      throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis project.'); 
-    }
-    return await this.projectRepository.delete(projectId);;
+                              .getOne();                         
+    const managerFoundInCompany = project.company.users.filter(u => u.id === userId);
+
+    if (managerFoundInCompany.length <= 0 && managerFoundInCompany[0].userRole !== UserRoleEnum.ADMIN) {
+      throw new BadRequestException(
+        'Must belong to company to delete project.',
+      );
+    }                                                        
+    await this.projectRepository.delete(projectId);
+    return { status: 200, message: 'Successfully deleted project.'};
   }
 }

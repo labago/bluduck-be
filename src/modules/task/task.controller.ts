@@ -66,6 +66,7 @@ export class TaskController {
   }
 
   @Post('invite')
+  @UserRole(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: "Invite user to a task." })
   @ApiResponse({ status: 201, description: 'Successfully added user to task.' })
   async invite(@Request() req: any, @Body() payload: TaskInviteDto): Promise<any> {
@@ -74,6 +75,7 @@ export class TaskController {
   }
 
   @Post('removeUser')
+  @UserRole(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: "Remove user from a task." })
   @ApiResponse({ status: 201, description: 'Successfully removed user from task.' })
   async removeUser(@Request() req: any, @Body() payload: TaskInviteDto): Promise<any> {

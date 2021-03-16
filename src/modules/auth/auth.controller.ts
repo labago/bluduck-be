@@ -89,6 +89,6 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getLoggedInUser(@Request() req: any): Promise<any> {
     const user = req.user as UserDto;
-    return await this.companyService.getAllCompaniesByUser(user);
+    return await this.userService.get(user.id);
   }
 }
