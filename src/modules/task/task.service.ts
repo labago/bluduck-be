@@ -96,7 +96,7 @@ export class TaskService {
     await this.taskRepository.update({ id: taskId }, payload);
     task = await this.getTaskById(taskId);
     task.users.forEach(user => {
-      this.emailService.sendTaskUpdateNotification(user.email, task.taskTitle);
+      this.emailService.sendTaskUpdateNotification(user.email, task.taskTitle, task.id);
     });
     return await this.updateProjectCompletion(task.project);
   }
