@@ -7,7 +7,6 @@ import { CompanyService } from '../company/company.service';
 import { ProjectDto } from './dto/project.dto';
 import { ProjectPatchDto } from './dto/project.patch.dto';
 import { UserRoleEnum } from 'modules/user/user.entity';
-import { UserRole } from 'modules/common/userRole/userRole.decorator';
 
 @Injectable()
 export class ProjectService {

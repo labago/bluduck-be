@@ -56,6 +56,7 @@ export class CompanyController {
   }
 
   @Post('invite')
+  @UserRole(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: "Invite someone to the company." })
   @ApiResponse({ status: 201, description: 'Successfully invited to company.' })
   async invite(@Request() req: any, @Body() payload: CompanyInviteDto): Promise<any> {

@@ -11,6 +11,7 @@ import { CompanyPatchDto } from './dto/company.patch.dto';
 import { CompanyInviteDto } from './dto/company.invite.dto';
 import { EmailService } from 'modules/email';
 import { UserRoleEnum } from 'modules/user';
+import { UserPatchInternalDto } from 'modules/user/dto/user.patch.internal.dto';
 
 @Injectable()
 export class CompanyService {
@@ -54,12 +55,13 @@ export class CompanyService {
     return companyList;
   }
 
-  async invite(ownerId: number, payload: CompanyInviteDto): Promise<any> {
+  async invite(userId: number, payload: CompanyInviteDto): Promise<any> {
     const company = await this.getCompanyById(payload.companyId);
-
-    if (company.owner.id !== ownerId) {
+    const userFoundInCompany = await company.users.filter(u => u.id === userId);
+    
+    if (company.owner.id !== userId && userFoundInCompany[0].userRole !== UserRoleEnum.MANAGER) {
       throw new BadRequestException(
-        'Must be owner to invite.',
+        'Must be owner or manager to invite.',
       );
     }
 
@@ -70,7 +72,7 @@ export class CompanyService {
       );
     }
 
-    if (ownerId === user.id) {
+    if (userId === user.id) {
       throw new BadRequestException(
         'Owner cannot invite self to company.',
       );
@@ -123,9 +125,10 @@ export class CompanyService {
             .relation(Company, 'users')
             .of(company)
             .add(owner); 
-    const userPatchDto = new UserPatchDto();
-    userPatchDto.company = company;                            
-    await this.userService.patch(owner.id, userPatchDto);
+    const userPatchDto = new UserPatchInternalDto();
+    userPatchDto.company = company;  
+    userPatchDto.userRole = 1;                          
+    await this.userService.patchInternal(owner.id, userPatchDto);
     return { status: 200, message: 'Successfully added owner to company.'}  
   }
 
