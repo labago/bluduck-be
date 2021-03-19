@@ -95,14 +95,14 @@ export class EmailService {
         }
     }
 
-    async sendTaskUpdateNotification(recipient: string, taskName: string, taskId: number): Promise<any> {
+    async sendTaskUpdateNotification(recipient: string, taskName: string, taskId: number, projectId: number): Promise<any> {
         try {
             const result = await this.transporter.sendMail({
                 from: this.fromAddy,
                 to: recipient,
                 subject: `${taskName} task has been updated`,
                 text: '',
-                html: `<p>${taskName} task has been updated. Click <a href="${this.host}?taskId=${taskId}">here</a> to view task update. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
+                html: `<p>${taskName} task has been updated. Click <a href="${this.host}/project/${projectId}?taskId=${taskId}">here</a> to view task update. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
             });
             return result.messageId;
         } catch(e) {
