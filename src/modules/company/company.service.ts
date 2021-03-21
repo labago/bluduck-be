@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Param, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, Repository } from 'typeorm';
 
@@ -111,7 +111,13 @@ export class CompanyService {
     }
 
     const owner = await this.userService.get(payload.ownerId);
-  
+    const companyExists = await this.companyRepository.findOne({companyName});
+    
+    if (companyExists) {
+      throw new BadRequestException(
+        'Company already exists. Try a different name.',
+      );
+    }
     const company = await this.companyRepository.save(
                             this.companyRepository.create({
                               companyName,
@@ -120,14 +126,14 @@ export class CompanyService {
                               projectLimit: payload.projectLimit,
                               taskLimit: payload.taskLimit
                             }));
+    
     await getConnection()
             .createQueryBuilder()
             .relation(Company, 'users')
             .of(company)
             .add(owner); 
     const userPatchDto = new UserPatchInternalDto();
-    userPatchDto.company = company;  
-    userPatchDto.userRole = 1;                          
+    userPatchDto.userRole = 1;                                               
     await this.userService.patchInternal(owner.id, userPatchDto);
     return { status: 200, message: 'Successfully added owner to company.'}  
   }

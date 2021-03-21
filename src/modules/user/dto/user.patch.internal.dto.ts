@@ -6,10 +6,5 @@ export class UserPatchInternalDto {
     @ApiProperty({ 
         required: false
     })
-    company: Company;
-
-    @ApiProperty({ 
-        required: false
-    })
     userRole: UserRoleEnum;
 }
