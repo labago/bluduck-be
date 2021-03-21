@@ -65,6 +65,21 @@ export class EmailService {
         }
     }
 
+    async sendCompanyOwnerNotification(recipient: string, companyName: string): Promise<any> {
+        try {
+            const result = await this.transporter.sendMail({
+                from: this.fromAddy,
+                to: recipient,
+                subject: `Welcome! You have been made owner of ${companyName}`,
+                text: '',
+                html: `<p>You have been made owner of a company and can now log in to begin creating projects and tasks. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
+            });
+            return result.messageId;
+        } catch(e) {
+            throw new BadRequestException(e);
+        }
+    }
+
     async sendTaskInviteNotification(recipient: string, taskName: string): Promise<any> {
         try {
             const result = await this.transporter.sendMail({
