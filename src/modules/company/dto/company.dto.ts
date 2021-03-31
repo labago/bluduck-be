@@ -6,4 +6,5 @@ export class CompanyDto {
     companyName: string;
     owner: UserDto;
     userLimit: number;
+    isActive: boolean;
 }

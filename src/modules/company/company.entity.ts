@@ -33,4 +33,7 @@ export class Company {
   @ManyToMany(() => User, user => user.companies, { cascade: true })
   @JoinTable()
   users?: User[];
+
+  @Column({ nullable: false, default: true })
+  isActive: boolean;
 }

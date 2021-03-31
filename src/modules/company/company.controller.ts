@@ -19,6 +19,7 @@ import { CompanyInviteDto } from './dto/company.invite.dto';
 import { UserRoleEnum } from 'modules/user/user.entity';
 import { UserRole } from 'modules/common/userRole/userRole.decorator';
 import { CompanyRemoveUserDto } from './dto/company.removeUser.dto';
+import { CompanyPatchSetActiveStatusDto } from './dto/company.patch.setActiveStatusdto';
 
 @Controller('api/company')
 @ApiTags('company')
@@ -80,6 +81,14 @@ export class CompanyController {
   @ApiResponse({ status: 201, description: 'Successfully updated company.' })
   async patch(@Param('id') companyId: number, @Request() req, @Body() payload: CompanyPatchDto): Promise<any> {
     return await this.companyService.patch(req, companyId, payload);
+  }
+
+  @Patch(':id/setActiveStatus')
+  @UserRole(UserRoleEnum.ADMIN)
+  @ApiOperation({ summary: "**ADMIN ONLY** Update company active status under company <id>." })
+  @ApiResponse({ status: 201, description: 'Successfully updated company.' })
+  async setActiveStatus(@Param('id') companyId: number, @Body() payload: CompanyPatchSetActiveStatusDto): Promise<any> {
+    return await this.companyService.setActiveStatus(companyId, payload);
   }
 
   @Delete(':id')

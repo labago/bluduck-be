@@ -17,6 +17,7 @@ import { Task } from 'modules/task/task.entity';
 import { TaskUpdateOwnerDto } from 'modules/task/dto/task.updateOwner.dto';
 import { ProjectService } from 'modules/project/project.service';
 import { TaskService } from 'modules/task/task.service';
+import { CompanyPatchSetActiveStatusDto } from './dto/company.patch.setActiveStatusdto';
 
 @Injectable()
 export class CompanyService {
@@ -148,7 +149,11 @@ export class CompanyService {
   }
 
   async patch(req: any, companyId, payload: CompanyPatchDto): Promise<any> {
-    const user = await this.userService.get(req.user.id);
+    await this.companyRepository.update({ id: companyId }, payload);
+    return await this.companyRepository.findOne(companyId);
+  }
+
+  async setActiveStatus(companyId, payload: CompanyPatchSetActiveStatusDto): Promise<any> {
     await this.companyRepository.update({ id: companyId }, payload);
     return await this.companyRepository.findOne(companyId);
   }
