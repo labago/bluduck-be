@@ -6,14 +6,14 @@ import { UserController } from './user.controller';
 import { AuthModule } from '../auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { EmailModule } from 'modules/email/email.module';
-import { CommonModule } from 'modules/common';
+import { CommonModule } from 'modules/common/common.module';
 
 @Module({
   imports: [
     forwardRef(() => AuthModule),
-    EmailModule,
-    PassportModule,
+    forwardRef(() => EmailModule),
     forwardRef(() => CommonModule),
+    PassportModule,
     TypeOrmModule.forFeature([User])],
   exports: [UserService],
   controllers: [UserController],

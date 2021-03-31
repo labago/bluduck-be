@@ -1,16 +1,16 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, Inject, forwardRef } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ConfigService } from 'modules/config';
+import { ConfigService } from 'modules/config/config.service';
 import { UserRoleEnum } from 'modules/user/user.entity';
 import * as jwt from 'jsonwebtoken';
-import { UserService } from 'modules/user';
-import { CompanyService } from 'modules/company/company.service';
+import { UserService } from 'modules/user/user.service';
 
 @Injectable()
 export class UserRoleGuard implements CanActivate {
   constructor(private reflector: Reflector,
-                private readonly configService: ConfigService,
-                private readonly userService: UserService) {}
+    private readonly configService: ConfigService,
+    private readonly userService: UserService
+    ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const userRole = this.reflector.get<UserRoleEnum[]>('userRole', context.getHandler());

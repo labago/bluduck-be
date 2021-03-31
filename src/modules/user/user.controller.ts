@@ -14,7 +14,7 @@ import { UserPatchDto } from './dto/user.patch.dto';
 import { UnauthorizedException } from '@nestjs/common';
 import { UserRolePatchDto } from './dto/userRole.patch.dto';
 import { UserRole } from 'modules/common/userRole/userRole.decorator';
-import { UserRoleEnum } from '.';
+import { UserRoleEnum } from './user.entity';
 
 @Controller('api/user')
 @ApiTags('user')

@@ -1,9 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { EmailService } from 'modules/email';
+import { EmailService } from 'modules/email/email.service';
+import { UserService } from 'modules/user/user.service';
 import { Hash } from '../../utils/Hash';
-import { ConfigService } from './../config';
-import { User, UserService } from './../user';
+import { ConfigService } from './../config/config.service';
+import { User } from './../user/user.entity';
 import { ChangePasswordPayload } from './dto/changePassword.payload';
 import { ForgotPasswordPayload } from './dto/forgotPassword.payload';
 import { ForgotPasswordChangePayload } from './dto/forgotPasswordChange.payload';

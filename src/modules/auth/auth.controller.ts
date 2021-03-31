@@ -11,22 +11,21 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthService} from './';
+import { AuthService} from './auth.service';
 import { UserService } from './../user/user.service';
 import { ChangePasswordPayload } from './dto/changePassword.payload';
-import { UserDto } from 'modules/user';
+import { UserDto } from 'modules/user/dto/user.dto';
 import { ForgotPasswordPayload } from './dto/forgotPassword.payload';
 import { ForgotPasswordChangePayload } from './dto/forgotPasswordChange.payload';
-import { CompanyService } from 'modules/company/company.service';
-import { LoginPayload, RegisterPayload } from './dto';
+import { LoginPayload } from './dto/login.payload';
+import { RegisterPayload } from './dto/register.payload';
 
 @Controller('api/auth')
 @ApiTags('authentication')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService,
-    private readonly companyService: CompanyService
+    private readonly userService: UserService
   ) {}
 
   @Post('login')

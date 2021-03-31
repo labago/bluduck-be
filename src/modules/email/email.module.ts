@@ -1,8 +1,8 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from 'modules/config';
-import { UserModule } from 'modules/user';
+import { ConfigModule } from 'modules/config/config.module';
+import { UserModule } from 'modules/user/user.module';
 import { EmailController } from './email.controller';
 import { Email } from './email.entity';
 import { EmailService } from './email.service';

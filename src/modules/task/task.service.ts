@@ -1,26 +1,34 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CompanyService } from 'modules/company';
-import { EmailService } from 'modules/email';
-import { ProjectDto, ProjectPatchDto, ProjectService } from 'modules/project';
+import { CompanyService } from 'modules/company/company.service';
+import { EmailService } from 'modules/email/email.service';
+import { ProjectPatchDto } from 'modules/project/dto/project.patch.dto';
 import { Project } from '../project/project.entity';
-import { UserPatchDto, UserRoleEnum, UserService } from 'modules/user';
-import { getConnection, Repository, Transaction } from 'typeorm';
-import { TaskDto, TaskPatchDto } from './dto';
+import { UserRoleEnum } from 'modules/user/user.entity';
+import { getConnection, Repository } from 'typeorm';
+import { TaskDto } from './dto/task.dto';
 import { TaskCreateDto } from './dto/task.create.dto';
 import { TaskInviteDto } from './dto/task.invite.dto';
 import { Task, TaskStatus } from './task.entity';
+import { TaskUpdateOwnerDto } from './dto/task.updateOwner.dto';
+import { ProjectService } from 'modules/project/project.service';
+import { UserService } from 'modules/user/user.service';
+import { TaskPatchDto } from './dto/task.patch.dto';
 
 @Injectable()
 export class TaskService {
   constructor(
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
-    private readonly companyService: CompanyService,
+    @Inject(forwardRef(() => CompanyService)) private readonly companyService: CompanyService,
     private readonly projectService: ProjectService,
     private readonly userService: UserService,
     private readonly emailService: EmailService
   ) {}
+
+    async getTasks(): Promise<Task[]> {
+      return await this.taskRepository.find({ relations: ['users', 'project', 'project.company','owner'] });
+    }
 
   async getTaskById(id: number): Promise<TaskDto> {
     return await this.taskRepository.findOne(id, { relations: ['users', 'owner', 'project', 'project.company', 'project.users', 'project.tasks'] });
@@ -99,6 +107,10 @@ export class TaskService {
       this.emailService.sendTaskUpdateNotification(user.email, task.taskTitle, task.id, task.project.id);
     });
     return await this.updateProjectCompletion(task.project);
+  }
+
+  async updateOwner(taskId: number, payload: TaskUpdateOwnerDto): Promise<any> {
+    return await this.taskRepository.update({ id: taskId }, payload);
   }
 
   async delete(userId: number, taskId: number): Promise<any> {   

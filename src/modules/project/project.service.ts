@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from './project.entity';
@@ -13,8 +13,12 @@ export class ProjectService {
   constructor(
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
-    private readonly companyService: CompanyService
+    @Inject(forwardRef(() => CompanyService))private readonly companyService: CompanyService
   ) {}
+
+  async getProjects(): Promise<Project[]> {
+    return await this.projectRepository.find({ relations: ['company', 'users', 'tasks'] });
+  }
 
   async getProjectById(id: number): Promise<ProjectDto> {
     return await this.projectRepository.findOne(id, { relations: ['company']});

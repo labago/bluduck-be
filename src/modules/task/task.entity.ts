@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { IsDate } from 'class-validator';
 import { Project } from 'modules/project/project.entity';
@@ -29,9 +30,11 @@ export class Task {
   status: TaskStatus;
 
   @ManyToOne(type => Project, project => project.tasks, { onDelete: 'CASCADE' })
+  @ApiProperty({ type: () => Project })
   project: Project;
 
   @ManyToOne(type => User)
+  @ApiProperty({ type: () => User })
   owner: User;
 
   @ManyToMany(() => User, { cascade: true })

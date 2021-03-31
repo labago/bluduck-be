@@ -12,12 +12,13 @@ import {
 import { ApiResponse, ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { CompanyService } from './company.service';
-import { UserDto } from '../user/dto';
+import { UserDto } from '../user/dto/user.dto';
 import { CompanyCreateDto } from './dto/company.create.dto';
 import { CompanyPatchDto } from './dto/company.patch.dto';
 import { CompanyInviteDto } from './dto/company.invite.dto';
-import { UserRoleEnum } from 'modules/user';
+import { UserRoleEnum } from 'modules/user/user.entity';
 import { UserRole } from 'modules/common/userRole/userRole.decorator';
+import { CompanyRemoveUserDto } from './dto/company.removeUser.dto';
 
 @Controller('api/company')
 @ApiTags('company')
@@ -86,6 +87,15 @@ export class CompanyController {
   @ApiResponse({ status: 201, description: 'Successfully deleted company.' })
   async delete(@Request() req, @Param('id') id: number): Promise<any> {
     return await this.companyService.delete(req, id);
+  }
+
+  @Post('removeUser')
+  @UserRole(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
+  @ApiOperation({ summary: "Remove a user from company." })
+  @ApiResponse({ status: 201, description: 'Successfully removed user from company.' })
+  async removeUser(@Request() req: any, @Body() payload: CompanyRemoveUserDto): Promise<any> {
+    const { id } = req.user as UserDto;
+    return await this.companyService.removeUser(id, payload);
   }
 }
   

@@ -1,17 +1,22 @@
-import { BadRequestException, Injectable, NotFoundException, Param, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException, Param, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, Repository } from 'typeorm';
+import { Connection, getConnection, Repository } from 'typeorm';
 
 import { Company } from './company.entity';
-import { CompanyDto } from './dto/company.dto';
-import { UserDto, UserPatchDto } from '../user/dto'
+import { UserDto } from '../user/dto/user.dto'
 import { UserService } from '../user/user.service';
 import { CompanyCreateDto } from './dto/company.create.dto';
 import { CompanyPatchDto } from './dto/company.patch.dto';
 import { CompanyInviteDto } from './dto/company.invite.dto';
-import { EmailService } from 'modules/email';
-import { UserRoleEnum } from 'modules/user';
+import { EmailService } from 'modules/email/email.service';
+import { User, UserRoleEnum } from 'modules/user/user.entity';
 import { UserPatchInternalDto } from 'modules/user/dto/user.patch.internal.dto';
+import { CompanyRemoveUserDto } from './dto/company.removeUser.dto';
+import { Project } from 'modules/project/project.entity';
+import { Task } from 'modules/task/task.entity';
+import { TaskUpdateOwnerDto } from 'modules/task/dto/task.updateOwner.dto';
+import { ProjectService } from 'modules/project/project.service';
+import { TaskService } from 'modules/task/task.service';
 
 @Injectable()
 export class CompanyService {
@@ -19,7 +24,9 @@ export class CompanyService {
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
     private readonly userService: UserService,
-    private readonly emailService: EmailService
+    private readonly emailService: EmailService,
+    @Inject(forwardRef(() => ProjectService)) private readonly projectService: ProjectService,
+    @Inject(forwardRef(() => TaskService)) private readonly taskService: TaskService
   ) {}
 
   async getCompanyById(id: number): Promise<Company> {
@@ -154,9 +161,65 @@ export class CompanyService {
                               .setParameter('id', id)
                               .getOne();
     if (company.owner.id !== req.user.id) {
-      throw new UnauthorizedException('User only authorized to make changes to his/her/their/shis/xis company.'); 
+      throw new UnauthorizedException('User only authorized to make changes to their company.'); 
     }
     await this.companyRepository.delete({ id });
     return company;
+  }
+
+  async removeUser(userId: any, payload: CompanyRemoveUserDto): Promise<any> {
+    const user = await this.userService.get(userId);
+    const company = await this.getCompanyById(payload.companyId);
+    const projects = await this.projectService.getProjects();
+    const tasks = await this.taskService.getTasks();
+    const userToBeRemoved = await this.userService.getByEmail(payload.email);
+    if (user.id !== company.owner.id && user.userRole !== UserRoleEnum.ADMIN) {
+      throw new UnauthorizedException('Only authorized users may do this.'); 
+    }
+
+    if (company.owner.email === payload.email) {
+      throw new BadRequestException('Cannot remove company owner');
+    }
+    
+    await this.removeUserFromTasks(userToBeRemoved, company, tasks);
+
+    await this.removeUserFromProjects(userToBeRemoved, company, projects);
+
+    await getConnection()
+          .createQueryBuilder()
+          .relation(Company, 'users')
+          .of(company)
+          .remove(userToBeRemoved);
+    
+    return { status: 200, message: 'Sucesssfully removed user from company.'};
+  }
+
+  private async removeUserFromTasks(user: User, company: Company, tasks: Task[]) {
+    tasks.forEach(async task => {
+      if (task.project.company.id === company.id) {
+        if (task.owner.id === user.id) {
+          let payload = new TaskUpdateOwnerDto();
+          payload.owner = company.owner;
+          await this.taskService.updateOwner(task.id, payload);
+        }
+        await getConnection()
+          .createQueryBuilder()
+          .relation(Task, 'users')
+          .of(task)
+          .remove(user);
+      }
+    });
+  }
+
+  private async removeUserFromProjects(user: User, company: Company, projects: Project[]) {
+    projects.forEach(async project => {
+      if (project.company.id === company.id) {
+        await getConnection()
+          .createQueryBuilder()
+          .relation(Project, 'users')
+          .of(project)
+          .remove(user);
+      }
+    });
   }
 }

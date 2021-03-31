@@ -1,11 +1,11 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { createTransport } from 'nodemailer';
-import { ConfigService } from 'modules/config';
+import { ConfigService } from 'modules/config/config.service';
 import { Email } from './email.entity';
 import { Repository } from 'typeorm';
 import { Hash } from '../../utils/Hash';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserDto } from 'modules/user';
+import { UserDto } from 'modules/user/dto/user.dto';
 
 @Injectable()
 export class EmailService {

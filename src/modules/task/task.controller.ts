@@ -13,10 +13,10 @@ import { ApiResponse, ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagg
 import { AuthGuard } from '@nestjs/passport';
 import { TaskService } from './task.service';
 import { TaskCreateDto } from './dto/task.create.dto';
-import { TaskPatchDto } from './dto';
+import { TaskPatchDto } from './dto/task.patch.dto';
 import { TaskInviteDto } from './dto/task.invite.dto';
-import { UserRole } from 'modules/common';
-import { UserRoleEnum } from 'modules/user';
+import { UserRole } from 'modules/common/userRole/userRole.decorator';
+import { UserRoleEnum } from 'modules/user/user.entity';
 
 @Controller('api/task')
 @ApiTags('task')

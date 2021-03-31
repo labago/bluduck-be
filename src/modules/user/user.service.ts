@@ -1,12 +1,14 @@
-import { Injectable, NotFoundException, NotAcceptableException } from '@nestjs/common';
+import { Injectable, NotFoundException, NotAcceptableException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { User } from './user.entity';
-import { UserPatchDto, UserCredentialsDto, UserDto } from './dto';
+import { UserPatchDto} from './dto/user.patch.dto';
 import { EmailService } from 'modules/email/email.service';
 import { UserRolePatchDto } from './dto/userRole.patch.dto';
 import { UserPatchInternalDto } from './dto/user.patch.internal.dto';
+import { UserCredentialsDto } from './dto/user.credentials.dto';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
