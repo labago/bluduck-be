@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, NotAcceptableException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 
 import { User } from './user.entity';
 import { UserPatchDto} from './dto/user.patch.dto';
@@ -10,6 +10,8 @@ import { UserPatchInternalDto } from './dto/user.patch.internal.dto';
 import { UserCredentialsDto } from './dto/user.credentials.dto';
 import { UserDto } from './dto/user.dto';
 import { generate } from 'generate-password';
+import { Company } from 'modules/company/company.entity';
+import { UserCreateNewDto } from './dto/user.createNew.dto';
 
 @Injectable()
 export class UserService {
@@ -61,7 +63,7 @@ export class UserService {
     return { status: 200, message: 'Sucessfully deleted user.'};
   }
 
-  async createUser(email: string, company: string) {
+  async createUser(email: string, company: Company) {
     const user = await this.getByEmail(email);
     if (user) {
     throw new NotAcceptableException(
@@ -72,13 +74,21 @@ export class UserService {
       length: 10,
       numbers: true
     });
-    let payload = new User();
+    let payload = new UserCreateNewDto();
     payload.email = email;
     payload.password = password;
+    payload.firstName = 'TempFirstName';
+    payload.lastName = 'TempLastName';
     payload.isVerified = true;
     const newUser = await this.userRepository.create(payload);
     await this.userRepository.save(newUser);
-    await this.emailService.sendCompanyInviteNewUser(payload, company);
+    
+    await getConnection()
+              .createQueryBuilder()
+              .relation(Company, 'users')
+              .of(company)
+              .add(newUser);
+    await this.emailService.sendCompanyInviteNewUser(payload, company.companyName);
     return { status: 200, message: 'Successfully invited new user to company.' }
   }
 

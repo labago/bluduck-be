@@ -14,7 +14,7 @@ import { CommonModule } from 'modules/common/common.module';
 @Module({
   imports: [
     AuthModule,
-    UserModule,
+    forwardRef(() => UserModule),
     EmailModule,
     forwardRef(() => ProjectModule),
     forwardRef(() => TaskModule),

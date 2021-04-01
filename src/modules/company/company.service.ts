@@ -81,7 +81,7 @@ export class CompanyService {
 
     const user = await this.userService.getByEmail(payload.email);
     if (!user) {
-      return await this.userService.createUser(payload.email, company.companyName);
+      return await this.userService.createUser(payload.email, company);
     } else {
       if (userId === user.id) {
         throw new BadRequestException(
