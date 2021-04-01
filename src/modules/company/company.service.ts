@@ -72,6 +72,12 @@ export class CompanyService {
         'Must be owner or manager to invite.',
       );
     }
+    
+    if (company.users.length >= company.userLimit || company.userLimit === 0) {
+      throw new BadRequestException(
+        'Company has reached its limit of users invited.'
+      )
+    }
 
     const user = await this.userService.getByEmail(payload.email);
     if (!user) {
@@ -173,30 +179,35 @@ export class CompanyService {
   }
 
   async removeUser(userId: any, payload: CompanyRemoveUserDto): Promise<any> {
-    const user = await this.userService.get(userId);
-    const company = await this.getCompanyById(payload.companyId);
-    const projects = await this.projectService.getProjects();
-    const tasks = await this.taskService.getTasks();
-    const userToBeRemoved = await this.userService.getByEmail(payload.email);
-    if (user.id !== company.owner.id && user.userRole !== UserRoleEnum.ADMIN) {
-      throw new UnauthorizedException('Only authorized users may do this.'); 
-    }
-
-    if (company.owner.email === payload.email) {
-      throw new BadRequestException('Cannot remove company owner');
+    try {
+      const user = await this.userService.get(userId);
+      const company = await this.getCompanyById(payload.companyId);
+      const projects = await this.projectService.getProjects();
+      const tasks = await this.taskService.getTasks();
+      const userToBeRemoved = await this.userService.getByEmail(payload.email);
+      if (user.id !== company.owner.id && user.userRole !== UserRoleEnum.ADMIN) {
+        throw new UnauthorizedException('Only authorized users may do this.'); 
+      }
+  
+      if (company.owner.email === payload.email) {
+        throw new BadRequestException('Cannot remove company owner');
+      }
+      
+      await this.removeUserFromTasks(userToBeRemoved, company, tasks);
+  
+      await this.removeUserFromProjects(userToBeRemoved, company, projects);
+  
+      await getConnection()
+            .createQueryBuilder()
+            .relation(Company, 'users')
+            .of(company)
+            .remove(userToBeRemoved);
+      
+      return { status: 200, message: 'Sucesssfully removed user from company.'};
+    } catch (e) {
+      throw new BadRequestException(e);
     }
     
-    await this.removeUserFromTasks(userToBeRemoved, company, tasks);
-
-    await this.removeUserFromProjects(userToBeRemoved, company, projects);
-
-    await getConnection()
-          .createQueryBuilder()
-          .relation(Company, 'users')
-          .of(company)
-          .remove(userToBeRemoved);
-    
-    return { status: 200, message: 'Sucesssfully removed user from company.'};
   }
 
   private async removeUserFromTasks(user: User, company: Company, tasks: Task[]) {

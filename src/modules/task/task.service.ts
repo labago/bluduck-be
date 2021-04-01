@@ -67,6 +67,12 @@ export class TaskService {
     const company = await this.companyService.getCompanyById(project.company.id);    
     const userFoundInCompany = await company.users.filter(u => u.id === userId);
 
+    if (project.tasks.length >= company.taskLimit || company.taskLimit === 0) {
+      throw new BadRequestException(
+        'Company has reached its limit of tasks created.'
+      )
+    }
+
     if (userFoundInCompany.length <= 0 && user.userRole !== UserRoleEnum.ADMIN) {
       throw new BadRequestException(
         'Task creator must belong to company to add people to task.',

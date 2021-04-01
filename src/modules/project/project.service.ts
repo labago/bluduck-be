@@ -21,7 +21,7 @@ export class ProjectService {
   }
 
   async getProjectById(id: number): Promise<ProjectDto> {
-    return await this.projectRepository.findOne(id, { relations: ['company']});
+    return await this.projectRepository.findOne(id, { relations: ['company', 'tasks']});
   }
 
   async getProjectsByCompany(userId: number, companyId: number): Promise<ProjectDto[]> {
@@ -47,6 +47,12 @@ export class ProjectService {
     const company = await this.companyService.getCompanyById(payload.companyId);
     const managerFoundInCompany = await company.users.filter(u => u.id === userId);
     
+    if (company.projects.length >= company.projectLimit || company.projectLimit === 0) {
+      throw new BadRequestException(
+        'Company has reached its limit of projects created.'
+      )
+    }
+
     if (managerFoundInCompany.length <= 0 && managerFoundInCompany[0].userRole !== UserRoleEnum.ADMIN) {
       throw new BadRequestException(
         'Must belong to company to create a project.',
