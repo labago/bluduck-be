@@ -65,6 +65,21 @@ export class EmailService {
         }
     }
 
+    async sendCompanyInviteNewUser(recipient: any, companyName: string): Promise<any> {
+        try {
+            const result = await this.transporter.sendMail({
+                from: this.fromAddy,
+                to: recipient.email,
+                subject: `Welcome! You have been added to ${companyName}`,
+                text: '',
+                html: `<p>You have been added to a company and can now log in with the following credentials: <br /> Login: <b>${recipient.email}</b> <br /> Password: <b>${recipient.password}</b> <br /> <br /> If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
+            });
+            return result.messageId;
+        } catch(e) {
+            throw new BadRequestException(e);
+        }
+    }
+
     async sendCompanyOwnerNotification(recipient: string, companyName: string): Promise<any> {
         try {
             const result = await this.transporter.sendMail({

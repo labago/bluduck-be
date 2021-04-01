@@ -81,36 +81,34 @@ export class CompanyService {
 
     const user = await this.userService.getByEmail(payload.email);
     if (!user) {
-      throw new BadRequestException(
-        'User needs to be registered and verified to join company.',
-      );
-    }
-
-    if (userId === user.id) {
-      throw new BadRequestException(
-        'Owner cannot invite self to company.',
-      );
-    }
-
-    if (!user.isVerified) {
-      throw new BadRequestException(
-        'User needs to be registered and verified to join company.',
-      );
-    }
-    
-    if (company.users.filter(u => u.id === user.id).length !== 0) {
-      throw new BadRequestException(
-        'User already exists in company.',
-      );
-    }
-
-    await getConnection()
-            .createQueryBuilder()
-            .relation(Company, 'users')
-            .of(company)
-            .add(user);
-            
-    await this.emailService.sendCompanyInviteNotification(payload.email, company.companyName);
+      return await this.userService.createUser(payload.email, company.companyName);
+    } else {
+      if (userId === user.id) {
+        throw new BadRequestException(
+          'Owner cannot invite self to company.',
+        );
+      }
+  
+      if (!user.isVerified) {
+        throw new BadRequestException(
+          'User needs to be registered and verified to join company.',
+        );
+      }
+      
+      if (company.users.filter(u => u.id === user.id).length !== 0) {
+        throw new BadRequestException(
+          'User already exists in company.',
+        );
+      }
+  
+      await getConnection()
+              .createQueryBuilder()
+              .relation(Company, 'users')
+              .of(company)
+              .add(user);
+              
+      await this.emailService.sendCompanyInviteNotification(payload.email, company.companyName);
+    }    
     
     return { status: 200, success: 'Successfully invited user to company.'};
   }

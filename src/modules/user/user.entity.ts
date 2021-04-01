@@ -16,10 +16,10 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 255 })
+  @Column({ nullable: true, length: 255 })
   firstName: string;
 
-  @Column({ length: 255 })
+  @Column({ nullable: true, length: 255 })
   lastName: string;
 
   @Column({ length: 255 })

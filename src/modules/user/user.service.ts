@@ -9,6 +9,7 @@ import { UserRolePatchDto } from './dto/userRole.patch.dto';
 import { UserPatchInternalDto } from './dto/user.patch.internal.dto';
 import { UserCredentialsDto } from './dto/user.credentials.dto';
 import { UserDto } from './dto/user.dto';
+import { generate } from 'generate-password';
 
 @Injectable()
 export class UserService {
@@ -53,6 +54,32 @@ export class UserService {
     const newUser = await this.userRepository.create(payload);
     await this.emailService.sendVerificationEmail(newUser);
     return await this.userRepository.save(newUser);
+  }
+
+  async delete(id: number) {
+    await this.userRepository.delete(id);
+    return { status: 200, message: 'Sucessfully deleted user.'};
+  }
+
+  async createUser(email: string, company: string) {
+    const user = await this.getByEmail(email);
+    if (user) {
+    throw new NotAcceptableException(
+        'User with provided email already exists.',
+      );
+    }
+    const password = generate({
+      length: 10,
+      numbers: true
+    });
+    let payload = new User();
+    payload.email = email;
+    payload.password = password;
+    payload.isVerified = true;
+    const newUser = await this.userRepository.create(payload);
+    await this.userRepository.save(newUser);
+    await this.emailService.sendCompanyInviteNewUser(payload, company);
+    return { status: 200, message: 'Successfully invited new user to company.' }
   }
 
   async patch(userId: number, payload: UserPatchDto): Promise<UserDto> {

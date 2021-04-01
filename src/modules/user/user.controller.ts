@@ -5,7 +5,8 @@ import {
   Get,
   UseGuards,
   Request,
-  Param
+  Param,
+  Delete
 } from '@nestjs/common';
 import { ApiResponse, ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -52,6 +53,15 @@ export class UserController {
     }
     return await this.userService.patch(id, payload);
   }
+
+  @Delete(':id')
+  @UserRole(UserRoleEnum.ADMIN)
+  @ApiOperation({ summary: "**ADMIN ONLY** Delete user by <id>" })
+  @ApiResponse({ status: 201, description: 'Successfully deleted user.' })
+  async delete(@Param('id') id: number): Promise<any> {
+    return await this.userService.delete(id);
+  }
+
 
   @Patch(':id/userRole')
   @ApiOperation({ summary: "**ADMIN ONLY** Update user role." })
