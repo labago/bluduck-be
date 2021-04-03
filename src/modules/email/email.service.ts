@@ -100,9 +100,9 @@ export class EmailService {
             const result = await this.transporter.sendMail({
                 from: this.fromAddy,
                 to: recipient,
-                subject: `Welcome! You have been added to task ${taskName}`,
+                subject: `You have been added to task "${taskName}"`,
                 text: '',
-                html: `<p>You have been added to a task and can log in to review. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
+                html: `<p>You have been added to a task "${taskName}" and can <a href="${this.host}/login">log in</a> to view task. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
             });
             return result.messageId;
         } catch(e) {
