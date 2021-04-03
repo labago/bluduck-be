@@ -51,7 +51,7 @@ export class AuthService {
   }
 
   async changePassword(userId: number, payload: ChangePasswordPayload): Promise<any> {
-    const user = await this.userService.get(userId);
+    const user = await this.userService.getByIdForLogin(userId);
     if (!user || !Hash.compare(payload.oldPassword, user.password)) {
       throw new UnauthorizedException('Old password does not match current password.');
     }

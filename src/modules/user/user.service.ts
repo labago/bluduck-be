@@ -46,6 +46,15 @@ export class UserService {
       .getOne();
   }
 
+  async getByIdForLogin(id: number): Promise<User> {
+    return await this.userRepository
+      .createQueryBuilder('users')
+      .addSelect('users.password')
+      .where('users.id = :id')
+      .setParameter('id', id)
+      .getOne();
+  }
+
   async create(payload: UserCredentialsDto) {
     const user = await this.getByEmail(payload.email);
     if (user) {
