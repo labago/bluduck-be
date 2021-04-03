@@ -183,8 +183,13 @@ export class CompanyService {
       const projects = await this.projectService.getProjects();
       const tasks = await this.taskService.getTasks();
       const userToBeRemoved = await this.userService.getByEmail(payload.email);
-      if (user.id !== company.owner.id && user.userRole !== UserRoleEnum.ADMIN) {
-        throw new UnauthorizedException('Only authorized users may do this.'); 
+
+      
+      const userFoundInCompany = await company.users.filter(u => u.email === user.email);
+      if (userFoundInCompany.length <= 0 && user.userRole !== UserRoleEnum.ADMIN) {
+        throw new BadRequestException(
+          'Only authorized users may perform this action.',
+        );
       }
   
       if (company.owner.email === payload.email) {
