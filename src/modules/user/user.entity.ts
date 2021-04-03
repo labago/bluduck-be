@@ -34,14 +34,9 @@ export class User {
   @Column({ nullable: true, length: 255 })
   role: string;
 
-  @Column({ nullable: true})
+  @Column({ nullable: false, default: false })
   isVerified: boolean;
   
-  @BeforeInsert()
-  defaultisVerifiedValue() {
-    this.isVerified = false;
-  }
-
   @Column({
     name: 'password',
     length: 255,
