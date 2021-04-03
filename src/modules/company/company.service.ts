@@ -18,6 +18,7 @@ import { TaskUpdateOwnerDto } from 'modules/task/dto/task.updateOwner.dto';
 import { ProjectService } from 'modules/project/project.service';
 import { TaskService } from 'modules/task/task.service';
 import { CompanyPatchSetActiveStatusDto } from './dto/company.patch.setActiveStatusdto';
+import { UserRole } from 'modules/common/userRole/userRole.decorator';
 
 @Injectable()
 export class CompanyService {
@@ -163,13 +164,14 @@ export class CompanyService {
   }
 
   async delete(req: any, id: number): Promise<any> {
+    const user = await this.userService.get(req.user.id);
     const company = await this.companyRepository
                               .createQueryBuilder('company')
                               .leftJoinAndSelect('company.owner', 'owner')
                               .where('company.id = :id')
                               .setParameter('id', id)
                               .getOne();
-    if (company.owner.id !== req.user.id) {
+    if (company.owner.id !== user.id && user.userRole !== UserRoleEnum.ADMIN) {
       throw new UnauthorizedException('User only authorized to make changes to their company.'); 
     }
     await this.companyRepository.delete({ id });
