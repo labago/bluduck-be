@@ -12,7 +12,7 @@ export class Company {
   @Column({ length: 255 })
   companyName: string;
 
-  @ManyToOne(type => User, { onDelete: 'CASCADE' })
+  @ManyToOne(type => User, { onDelete: 'CASCADE', nullable: false })
   owner: User;
 
   @OneToMany(type => Project, project => project.company)
