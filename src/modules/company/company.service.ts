@@ -146,7 +146,9 @@ export class CompanyService {
             .of(company)
             .add(owner); 
     const userPatchDto = new UserPatchInternalDto();
-    userPatchDto.userRole = 1;                                               
+    if (owner.userRole !== 2) {
+      userPatchDto.userRole = 1;                                               
+    }
     await this.userService.patchInternal(owner.id, userPatchDto);
 
     await this.emailService.sendCompanyOwnerNotification(owner.email, company.companyName);
