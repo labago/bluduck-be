@@ -48,7 +48,7 @@ export class CompanyService {
   }
 
   async getAllCompanies({ id }: UserDto): Promise<any> {    
-    return await this.companyRepository.find();
+    return await this.companyRepository.find({ relations: ['owner'] });
   }
 
   async getAllCompaniesByOwner({ id }: UserDto): Promise<any> {
@@ -154,7 +154,16 @@ export class CompanyService {
   }
 
   async patch(req: any, companyId, payload: CompanyPatchDto): Promise<any> {
-    await this.companyRepository.update({ id: companyId }, payload);
+    const owner = await this.userService.get(payload.ownerId);
+    const company = {
+      companyName: payload.companyName,
+      owner,
+      userLimit: payload.userLimit,
+      projectLimit: payload.projectLimit,
+      taskLimit: payload.taskLimit,
+      isActive: payload.isActive
+    }
+    await this.companyRepository.update({ id: companyId }, company);
     return await this.companyRepository.findOne(companyId);
   }
 

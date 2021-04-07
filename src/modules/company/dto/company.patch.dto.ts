@@ -1,13 +1,21 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UserDto } from "modules/user/dto/user.dto";
 
 export class CompanyPatchDto {   
     @ApiProperty()
     companyName: string;
     
     @ApiProperty()
-    owner: UserDto;
+    ownerId: number;
     
     @ApiProperty()
     userLimit: number;
+
+    @ApiProperty()
+    projectLimit: number;
+
+    @ApiProperty()
+    taskLimit: number;
+
+    @ApiProperty()
+    isActive: boolean;
 }
