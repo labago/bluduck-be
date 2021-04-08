@@ -109,9 +109,12 @@ export class TaskService {
     }
     await this.taskRepository.update({ id: taskId }, payload);
     task = await this.getTaskById(taskId);
-    // task.users.forEach(user => {
-    //   this.emailService.sendTaskUpdateNotification(user.email, task.taskTitle, task.id, task.project.id);
-    // });
+    if (payload.status && (payload.status === TaskStatus.BLOCK || payload.status === TaskStatus.DONE)) {
+      task.users.forEach(user => {
+        this.emailService.sendTaskUpdateNotification(user.email, task.taskTitle, task.id, task.project.id);
+      });
+    }
+    
     return await this.updateProjectCompletion(task.project);
   }
 
