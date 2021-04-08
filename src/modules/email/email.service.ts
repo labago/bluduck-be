@@ -72,7 +72,7 @@ export class EmailService {
                 to: recipient.email,
                 subject: `Welcome! You have been added to ${companyName}`,
                 text: '',
-                html: `<p>You have been added to a company and can now <a href="${this.host}/login">log in</a> with the following credentials: <br /> Login: <b>${recipient.email}</b> <br /> Password: <b>${recipient.password}</b> <br /> <br /> If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
+                html: `<p>You have been added to a company and can now <a href="${this.host}/edit-profile">log in</a> with the following credentials: <br /> Login: <b>${recipient.email}</b> <br /> Password: <b>${recipient.password}</b> <br /> <br /> If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
             });
             return result.messageId;
         } catch(e) {
