@@ -34,6 +34,6 @@ export class Company {
   @JoinTable()
   users?: User[];
 
-  @Column({ nullable: false, default: true })
+  @Column({ nullable: true, default: true })
   isActive: boolean;
 }

@@ -156,16 +156,7 @@ export class CompanyService {
   }
 
   async patch(req: any, companyId, payload: CompanyPatchDto): Promise<any> {
-    const owner = await this.userService.get(payload.ownerId);
-    const company = {
-      companyName: payload.companyName,
-      owner,
-      userLimit: payload.userLimit,
-      projectLimit: payload.projectLimit,
-      taskLimit: payload.taskLimit,
-      isActive: payload.isActive
-    }
-    await this.companyRepository.update({ id: companyId }, company);
+    await this.companyRepository.update({ id: companyId }, payload);
     return await this.companyRepository.findOne(companyId);
   }
 

@@ -1,21 +1,21 @@
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CompanyPatchDto {   
-    @ApiProperty()
+    @ApiProperty({ required: false })
     companyName: string;
     
-    @ApiProperty()
+    @ApiProperty({ required: false })
     ownerId: number;
     
-    @ApiProperty()
+    @ApiProperty({ required: false })
     userLimit: number;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     projectLimit: number;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     taskLimit: number;
 
-    @ApiProperty()
+    @ApiProperty({ required: false })
     isActive: boolean;
 }
