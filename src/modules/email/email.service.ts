@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { Hash } from '../../utils/Hash';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDto } from 'modules/user/dto/user.dto';
+import { TaskStatus } from 'modules/task/task.entity';
 
 @Injectable()
 export class EmailService {
@@ -125,14 +126,14 @@ export class EmailService {
         }
     }
 
-    async sendTaskUpdateNotification(recipient: string, taskName: string, taskId: number, projectId: number): Promise<any> {
+    async sendTaskUpdateNotification(recipient: string, taskName: string, taskId: number, taskStatus: TaskStatus, projectId: number): Promise<any> {
         try {
             const result = await this.transporter.sendMail({
                 from: this.fromAddy,
                 to: recipient,
-                subject: `${taskName} task has been updated`,
+                subject: `${taskName} task has been updated to ${taskStatus === TaskStatus.DONE ? 'DONE' : 'HELP'}`,
                 text: '',
-                html: `<p>${taskName} task has been updated. Click <a href="${this.host}/project/${projectId}?taskId=${taskId}">here</a> to view task update. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
+                html: `<p>${taskName} task has been updated ${taskStatus === TaskStatus.DONE ? 'DONE' : 'HELP'}. Click <a href="${this.host}/project/${projectId}?taskId=${taskId}">here</a> to view task update. If you received this email in error, please ignore. Thank you, <br /><br /> The BluDuck Team`
             });
             return result.messageId;
         } catch(e) {

@@ -111,7 +111,7 @@ export class TaskService {
     task = await this.getTaskById(taskId);
     if (payload.status && (payload.status === TaskStatus.BLOCK || payload.status === TaskStatus.DONE)) {
       task.users.forEach(user => {
-        this.emailService.sendTaskUpdateNotification(user.email, task.taskTitle, task.id, task.project.id);
+        this.emailService.sendTaskUpdateNotification(user.email, task.taskTitle, task.id, task.status, task.project.id);
       });
     }
     
