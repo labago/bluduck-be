@@ -34,13 +34,13 @@ export class TaskService {
     return await this.taskRepository.findOne(id, { relations: ['users', 'owner', 'project', 'project.company', 'project.users', 'project.tasks'] });
   }
 
-  async getTasksByProjectId(userId: number, projectId: number): Promise<TaskDto[]> {
+  async getTasksByProjectId(user: any, projectId: number): Promise<TaskDto[]> {
     
       const project = await this.projectService.getProjectById(projectId);
       const company = await this.companyService.getCompanyById(project.company.id);
-      const userFound = await company.users.filter(user => user.id === userId)[0];
+      const userFound = await company.users.filter(u => u.id === user.id)[0];
 
-      if (!userFound) {
+      if (!userFound && user.userRole !== UserRoleEnum.ADMIN) {
         throw new NotFoundException('Only users in company can view projects.');
       }
       // todo add owner and assignee relations

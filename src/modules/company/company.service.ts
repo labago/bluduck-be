@@ -41,7 +41,7 @@ export class CompanyService {
   async getCompanyWithProjects(companyId: number, user: UserDto): Promise<Company> {
     const company = await this.getCompanyById(companyId);
     const userFound = await company.users.filter(u => u.id === user.id)[0];
-    if (!userFound && user.userRole !== 2) {
+    if (!userFound && user.userRole !== UserRoleEnum.ADMIN) {
       throw new UnauthorizedException('Must be member of company to view projects.'); 
     }
     return company;

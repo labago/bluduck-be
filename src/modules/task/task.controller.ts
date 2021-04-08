@@ -24,7 +24,6 @@ import { UserRoleEnum } from 'modules/user/user.entity';
 @UseGuards(AuthGuard())
 @ApiResponse({ status: 400, description: 'Bad Request' })
 @ApiResponse({ status: 401, description: 'Unauthorized' })
-
 export class TaskController {
   constructor(
     private readonly taskService: TaskService
@@ -34,8 +33,8 @@ export class TaskController {
   @ApiOperation({ summary: "Retrieve all tasks under project <id>." })
   @ApiResponse({ status: 201, description: 'Successfully retrieved tasks.' })
   async get(@Param('id') projectId: number, @Request() req: any): Promise<any> {
-    const { id } = req.user;
-    return await this.taskService.getTasksByProjectId(id, projectId);
+    const user = req.user;
+    return await this.taskService.getTasksByProjectId(user, projectId);
   }
 
   @Post()

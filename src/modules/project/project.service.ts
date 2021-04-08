@@ -6,14 +6,16 @@ import { ProjectCreateDto } from './dto/project.create.dto';
 import { CompanyService } from '../company/company.service';
 import { ProjectDto } from './dto/project.dto';
 import { ProjectPatchDto } from './dto/project.patch.dto';
-import { UserRoleEnum } from 'modules/user/user.entity';
+import { User, UserRoleEnum } from 'modules/user/user.entity';
+import { UserService } from 'modules/user/user.service';
 
 @Injectable()
 export class ProjectService {
   constructor(
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
-    @Inject(forwardRef(() => CompanyService))private readonly companyService: CompanyService
+    @Inject(forwardRef(() => CompanyService))private readonly companyService: CompanyService,
+    @Inject(forwardRef(() => UserService))private readonly userService: UserService
   ) {}
 
   async getProjects(): Promise<Project[]> {
@@ -25,9 +27,10 @@ export class ProjectService {
   }
 
   async getProjectsByCompany(userId: number, companyId: number): Promise<ProjectDto[]> {
+    const user = await this.userService.get(userId);
     const company = await this.companyService.getCompanyById(companyId);
     const userFoundInCompany = await company.users.filter(u => u.id === userId);
-    if (userFoundInCompany.length <= 0 && userFoundInCompany[0].userRole !== UserRoleEnum.ADMIN) {
+    if (userFoundInCompany.length <= 0 && user.userRole !== UserRoleEnum.ADMIN) {
       throw new NotFoundException('Must be a member of company to retrieve projects.');
     }
     return this.projectRepository.find({
