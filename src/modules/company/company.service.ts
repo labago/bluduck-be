@@ -146,10 +146,10 @@ export class CompanyService {
             .of(company)
             .add(owner); 
     const userPatchDto = new UserPatchInternalDto();
-    if (owner.userRole !== 2) {
-      userPatchDto.userRole = 1;                                               
+    if (owner.userRole !== UserRoleEnum.ADMIN) {
+      userPatchDto.userRole = UserRoleEnum.MANAGER;                                               
+      await this.userService.patchInternal(owner.id, userPatchDto);
     }
-    await this.userService.patchInternal(owner.id, userPatchDto);
 
     await this.emailService.sendCompanyOwnerNotification(owner.email, company.companyName);
     return { status: 200, message: 'Successfully added owner to company.'}  
