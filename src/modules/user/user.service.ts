@@ -25,6 +25,10 @@ export class UserService {
     return await this.userRepository.findOne(id, { relations: ['companies'] });
   }
 
+  async getOwner(id: number): Promise<User>  {
+    return await this.userRepository.findOne(id);
+  }
+
   async getAllUsers(): Promise<User[]>  {
     return await this.userRepository.find({ relations: ['companies']});
   }

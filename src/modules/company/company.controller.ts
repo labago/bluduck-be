@@ -20,6 +20,7 @@ import { UserRoleEnum } from 'modules/user/user.entity';
 import { UserRole } from 'modules/common/userRole/userRole.decorator';
 import { CompanyRemoveUserDto } from './dto/company.removeUser.dto';
 import { CompanyPatchSetActiveStatusDto } from './dto/company.patch.setActiveStatusdto';
+import { CompanyPatchOwnerDto } from './dto/company.patchOwner.dto';
 
 @Controller('api/company')
 @ApiTags('company')
@@ -82,6 +83,15 @@ export class CompanyController {
   async patch(@Param('id') companyId: number, @Request() req, @Body() payload: CompanyPatchDto): Promise<any> {
     return await this.companyService.patch(req, companyId, payload);
   }
+
+  @Patch(':id/owner')
+  @UserRole(UserRoleEnum.ADMIN)
+  @ApiOperation({ summary: "**ADMIN ONLY** Update company owner under company <id>." })
+  @ApiResponse({ status: 201, description: 'Successfully updated company.' })
+  async patchOwner(@Param('id') companyId: number, @Request() req, @Body() payload: CompanyPatchOwnerDto): Promise<any> {
+    return await this.companyService.patchOwner(req, companyId, payload);
+  }
+
 
   @Patch(':id/setActiveStatus')
   @UserRole(UserRoleEnum.ADMIN)

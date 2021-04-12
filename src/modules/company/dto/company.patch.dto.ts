@@ -5,9 +5,6 @@ export class CompanyPatchDto {
     companyName: string;
     
     @ApiProperty({ required: false })
-    ownerId: number;
-    
-    @ApiProperty({ required: false })
     userLimit: number;
 
     @ApiProperty({ required: false })
