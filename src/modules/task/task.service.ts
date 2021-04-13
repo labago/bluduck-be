@@ -98,9 +98,9 @@ export class TaskService {
     const companyId = task.project.company.id;
     const company = await this.companyService.getCompanyById(companyId);
     const userFoundInCompany = await company.users.filter(u => u.email === owner.email);
-    if (userFoundInCompany.length <= 0) {
+    if (userFoundInCompany.length <= 0 && owner.userRole !== UserRoleEnum.ADMIN) {
       throw new BadRequestException(
-        'User must belong to company before updating task.',
+        'User must be manager or admin to update task.',
       );
     }
 
