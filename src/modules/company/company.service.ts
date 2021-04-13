@@ -162,6 +162,14 @@ export class CompanyService {
 
   async patchOwner(req: any, companyId, payload: CompanyPatchOwnerDto): Promise<any> {
     const owner = await this.userService.get(payload.ownerId);
+    const company = await this.getCompanyById(companyId);
+    if (company.users.filter(u => u.id === owner.id).length === 0) {
+      await getConnection()
+      .createQueryBuilder()
+      .relation(Company, 'users')
+      .of(company)
+      .add(owner); 
+    }    
     await this.companyRepository.update({ id: companyId }, { owner });
     return await this.companyRepository.findOne(companyId, { relations: ['owner'] });
   }

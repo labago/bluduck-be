@@ -48,6 +48,7 @@ export class ProjectService {
 
   async create(userId: number, payload: ProjectCreateDto): Promise<Project> {
     const company = await this.companyService.getCompanyById(payload.companyId);
+    const user = await this.userService.get(userId);
     const managerFoundInCompany = await company.users.filter(u => u.id === userId);
     
     if (company.projects.length >= company.projectLimit || company.projectLimit === 0) {
@@ -56,9 +57,9 @@ export class ProjectService {
       )
     }
 
-    if (managerFoundInCompany.length <= 0 && managerFoundInCompany[0].userRole !== UserRoleEnum.ADMIN) {
+    if (managerFoundInCompany.length <= 0 && user.userRole !== UserRoleEnum.ADMIN) {
       throw new BadRequestException(
-        'Must belong to company to create a project.',
+        'Must be admin or belong to company to create a project.',
       );
     }
 
