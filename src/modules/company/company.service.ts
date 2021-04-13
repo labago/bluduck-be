@@ -67,8 +67,9 @@ export class CompanyService {
   async invite(userId: number, payload: CompanyInviteDto): Promise<any> {
     const company = await this.getCompanyById(payload.companyId);
     const userFoundInCompany = await company.users.filter(u => u.id === userId);
-    
-    if (company.owner.id !== userId && userFoundInCompany[0].userRole !== UserRoleEnum.MANAGER) {
+    const thisUser = await this.userService.get(userId);
+
+    if (userFoundInCompany.length === 0 && thisUser.userRole !== UserRoleEnum.ADMIN) {
       throw new BadRequestException(
         'Must be owner or manager to invite.',
       );
