@@ -21,7 +21,7 @@ export class TaskService {
     @InjectRepository(Task)
     private readonly taskRepository: Repository<Task>,
     @Inject(forwardRef(() => CompanyService)) private readonly companyService: CompanyService,
-    private readonly projectService: ProjectService,
+    @Inject(forwardRef(() => ProjectService)) private readonly projectService: ProjectService,
     private readonly userService: UserService,
     private readonly emailService: EmailService
   ) {}

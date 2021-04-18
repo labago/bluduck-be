@@ -17,6 +17,7 @@ import { ProjectPatchDto } from './dto/project.patch.dto';
 import { UserRoleGuard } from 'modules/common/userRole/userRole.guard';
 import { UserRole } from 'modules/common/userRole/userRole.decorator';
 import { UserRoleEnum } from 'modules/user/user.entity';
+import { ProjectCopyDto } from './dto/project.copy.dto';
 
 @Controller('api/project')
 @ApiTags('project')
@@ -65,6 +66,15 @@ export class ProjectController {
   async delete(@Request() req, @Param('id') projectId: number): Promise<any> {
     const { id } = req.user;
     return await this.projectService.delete(id, projectId);
+  }
+
+  @Post(':id/copy')
+  @UserRole(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
+  @ApiOperation({ summary: "Copy a project." })
+  @ApiResponse({ status: 201, description: 'Successfully copied a project.' })
+  async copy(@Request() req: any, @Param('id') projectId: number): Promise<any> {
+    const { id } = req.user;
+    return await this.projectService.copy(id, projectId);
   }
 }
   

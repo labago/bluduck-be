@@ -9,6 +9,7 @@ import { UserModule } from '../user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from 'modules/config/config.module';
 import { CommonModule } from 'modules/common/common.module';
+import { TaskModule } from 'modules/task/task.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CommonModule } from 'modules/common/common.module';
     forwardRef(() => CompanyModule),
     forwardRef(() => UserModule),
     forwardRef(() => CommonModule),
+    forwardRef(() => TaskModule),
     PassportModule,
     ConfigModule,
     TypeOrmModule.forFeature([Project])

@@ -8,14 +8,18 @@ import { ProjectDto } from './dto/project.dto';
 import { ProjectPatchDto } from './dto/project.patch.dto';
 import { User, UserRoleEnum } from 'modules/user/user.entity';
 import { UserService } from 'modules/user/user.service';
+import { ProjectCopyDto } from './dto/project.copy.dto';
+import { TaskService } from 'modules/task/task.service';
+import { TaskCreateDto } from 'modules/task/dto/task.create.dto';
 
 @Injectable()
 export class ProjectService {
   constructor(
     @InjectRepository(Project)
     private readonly projectRepository: Repository<Project>,
-    @Inject(forwardRef(() => CompanyService))private readonly companyService: CompanyService,
-    @Inject(forwardRef(() => UserService))private readonly userService: UserService
+    @Inject(forwardRef(() => CompanyService)) private readonly companyService: CompanyService,
+    @Inject(forwardRef(() => UserService)) private readonly userService: UserService,
+    @Inject(forwardRef(() => TaskService)) private readonly taskService: TaskService
   ) {}
 
   async getProjects(): Promise<Project[]> {
@@ -94,5 +98,41 @@ export class ProjectService {
     }                                                        
     await this.projectRepository.delete(projectId);
     return { status: 200, message: 'Successfully deleted project.'};
+  }
+
+  async copy(userId: number, projectId: number): Promise<any> {
+    const project = await this.projectRepository.findOne({ id: projectId }, { relations: ['tasks', 'company'] });
+    const company = await this.companyService.getCompanyById(project.company.id);
+    const user = await this.userService.get(userId);
+    const managerFoundInCompany = await company.users.filter(u => u.id === userId);
+    
+    if (company.projects.length >= company.projectLimit || company.projectLimit === 0) {
+      throw new BadRequestException(
+        'Company has reached its limit of projects created.'
+      )
+    }
+
+    if (managerFoundInCompany.length <= 0 && user.userRole !== UserRoleEnum.ADMIN) {
+      throw new BadRequestException(
+        'Must be admin or belong to company to create a project.',
+      );
+    }
+
+    const newProject = await this.projectRepository.save(this.projectRepository.create({
+      company,
+      projectName: `${project.projectName} COPY`,
+      dueDate: project.dueDate,
+      latestUpdate: project.latestUpdate
+    }));
+
+    await project.tasks.forEach(async task => {
+      const newTask = new TaskCreateDto();
+      newTask.projectId = newProject.id;
+      newTask.taskTitle = `${task.taskTitle} COPY`;
+      newTask.date = task.date;
+      await this.taskService.create(userId, newTask);
+    })
+
+    return { status: 200, message: 'Successfully copied project.', data: newProject };
   }
 }

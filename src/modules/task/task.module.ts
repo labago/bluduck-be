@@ -16,7 +16,7 @@ import { CommonModule } from 'modules/common/common.module';
     AuthModule,
     UserModule,
     forwardRef(() => CompanyModule),
-    ProjectModule,
+    forwardRef(() => ProjectModule),
     EmailModule,
     CommonModule,
     PassportModule,
