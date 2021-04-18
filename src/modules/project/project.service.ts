@@ -133,6 +133,6 @@ export class ProjectService {
       await this.taskService.create(userId, newTask);
     })
 
-    return { status: 200, message: 'Successfully copied project.', data: newProject };
+    return { newProject };
   }
 }
