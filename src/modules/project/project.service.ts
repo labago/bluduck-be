@@ -128,7 +128,7 @@ export class ProjectService {
     await project.tasks.forEach(async task => {
       const newTask = new TaskCreateDto();
       newTask.projectId = newProject.id;
-      newTask.taskTitle = `${task.taskTitle} COPY`;
+      newTask.taskTitle = task.taskTitle;
       newTask.date = task.date;
       newTask.notes = `[{"text": "Task created", "date": "'+moment().format()+'", "type": "creation", "userId": "'+this.$auth.user.id+'"}]`;
       await this.taskService.create(userId, newTask);
