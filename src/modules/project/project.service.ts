@@ -130,7 +130,7 @@ export class ProjectService {
       newTask.projectId = newProject.id;
       newTask.taskTitle = task.taskTitle;
       newTask.date = task.date;
-      newTask.notes = `[{"text": "Task created", "date": "'+ ${Date.now()} +'", "type": "creation", "userId": "'+ ${userId} +'"}]`;
+      newTask.notes = `[{"text": "Task created", "date": "${Date.now()}", "type": "creation", "userId": "${userId}"}]`;
       await this.taskService.create(userId, newTask);
     })
 
