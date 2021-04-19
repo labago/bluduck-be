@@ -26,11 +26,11 @@ export class ProjectService {
     return await this.projectRepository.find({ relations: ['company', 'users', 'tasks'] });
   }
 
-  async getProjectById(id: number): Promise<ProjectDto> {
-    return await this.projectRepository.findOne(id, { relations: ['company', 'tasks']});
+  async getProjectById(id: number): Promise<Project> {
+    return await this.projectRepository.findOne(id, { relations: ['company', 'company.users', 'tasks']});
   }
 
-  async getProjectsByCompany(userId: number, companyId: number): Promise<ProjectDto[]> {
+  async getProjectsByCompany(userId: number, companyId: number): Promise<Project[]> {
     const user = await this.userService.get(userId);
     const company = await this.companyService.getCompanyById(companyId);
     const userFoundInCompany = await company.users.filter(u => u.id === userId);
@@ -75,7 +75,7 @@ export class ProjectService {
     }));
   }
 
-  async patch(userId, projectId, payload: ProjectPatchDto): Promise<ProjectDto> {
+  async patch(userId, projectId, payload: ProjectPatchDto): Promise<Project> {
     const project = await this.projectRepository
                               .createQueryBuilder('project')
                               .leftJoinAndSelect('project.company', 'company')
@@ -88,10 +88,11 @@ export class ProjectService {
   }
 
   async delete(userId: number, projectId: number): Promise<any> {
-    const project = await this.projectRepository.findOne({ id: projectId }, { relations: ['company', 'company.users'] });     
+    const project = await this.getProjectById(projectId); 
+    const user = await this.userService.get(userId);
     const managerFoundInCompany = project.company.users.filter(u => u.id === userId);
 
-    if (managerFoundInCompany.length <= 0 && managerFoundInCompany[0].userRole !== UserRoleEnum.ADMIN) {
+    if (managerFoundInCompany.length <= 0 && user.userRole !== UserRoleEnum.ADMIN) {
       throw new BadRequestException(
         'Must belong to company to delete project.',
       );
