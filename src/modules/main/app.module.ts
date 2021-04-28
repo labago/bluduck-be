@@ -9,6 +9,7 @@ import { ProjectModule } from './../project/project.module';
 import { EmailModule } from 'modules/email/email.module';
 import { TaskModule } from 'modules/task/task.module';
 import { CommonModule } from 'modules/common/common.module';
+import { SendGridModule } from '@ntegral/nestjs-sendgrid';
 import { UserVerifiedMiddleware } from 'modules/common/middleware/userVerified.middleware';
 import { CompanyController } from 'modules/company/company.controller';
 import { ProjectController } from 'modules/project/project.controller';
@@ -32,6 +33,13 @@ import { ConfigService } from 'modules/config/config.service';
           synchronize: configService.isEnv('dev'),
         } as TypeOrmModuleAsyncOptions;
       },
+    }),
+    SendGridModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        apiKey: process.env.SENDGRID_API_KEY || configService.get('SENDGRID_API_KEY'),
+      }),
+      inject: [ConfigService],
     }),
     ConfigModule,
     AuthModule,

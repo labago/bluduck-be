@@ -4,11 +4,9 @@ import { Repository } from 'typeorm';
 import { Project } from './project.entity';
 import { ProjectCreateDto } from './dto/project.create.dto';
 import { CompanyService } from '../company/company.service';
-import { ProjectDto } from './dto/project.dto';
 import { ProjectPatchDto } from './dto/project.patch.dto';
-import { User, UserRoleEnum } from 'modules/user/user.entity';
+import { UserRoleEnum } from 'modules/user/user.entity';
 import { UserService } from 'modules/user/user.service';
-import { ProjectCopyDto } from './dto/project.copy.dto';
 import { TaskService } from 'modules/task/task.service';
 import { TaskCreateDto } from 'modules/task/dto/task.create.dto';
 
