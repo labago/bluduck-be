@@ -156,13 +156,29 @@ export class TaskService {
         'Inviter must belong to company to add people to task.',
       );
     }
-
+    
+    // remove user from task
     await getConnection()
           .createQueryBuilder()
           .relation(Task, 'users')
           .of(task)
           .remove(userToBeRemoved);
     
+    // check if user exists in other tasks
+    const tasks = await this.getTasks();
+    let userExists = false;
+    tasks.forEach(task => {
+      task.users.forEach(user => {
+        if (user.id === userToBeRemoved.id) {
+          userExists = true;
+        }
+      })
+    });
+
+    if (!userExists) {
+      await this.projectService.removeUserFromProject(userToBeRemoved, task.project);
+    }
+
     await this.emailService.sendTaskRemoveNotification(payload.email, task.taskTitle);
     return { status: 200, message: 'Successfully removed user from  task' };
   }
