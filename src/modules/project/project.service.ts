@@ -1,11 +1,11 @@
 import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { Project } from './project.entity';
 import { ProjectCreateDto } from './dto/project.create.dto';
 import { CompanyService } from '../company/company.service';
 import { ProjectPatchDto } from './dto/project.patch.dto';
-import { UserRoleEnum } from 'modules/user/user.entity';
+import { User, UserRoleEnum } from 'modules/user/user.entity';
 import { UserService } from 'modules/user/user.service';
 import { TaskService } from 'modules/task/task.service';
 import { TaskCreateDto } from 'modules/task/dto/task.create.dto';
@@ -25,7 +25,7 @@ export class ProjectService {
   }
 
   async getProjectById(id: number): Promise<Project> {
-    return await this.projectRepository.findOne(id, { relations: ['company', 'company.users', 'tasks']});
+    return await this.projectRepository.findOne(id, { relations: ['company', 'company.users', 'tasks', 'users']});
   }
 
   async getProjectsByCompany(userId: number, companyId: number): Promise<Project[]> {
@@ -46,6 +46,14 @@ export class ProjectService {
         company: companyId
       }
     });
+  }
+  
+  async removeUserFromProject(user: User, project: Project): Promise<any> {
+    await getConnection()
+      .createQueryBuilder()
+      .relation(Project, 'users')
+      .of(project)
+      .remove(user);
   }
 
   async create(userId: number, payload: ProjectCreateDto): Promise<Project> {
