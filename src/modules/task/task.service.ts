@@ -165,7 +165,7 @@ export class TaskService {
           .remove(userToBeRemoved);
     
     // check if user exists in other tasks
-    const tasks = await this.getTasks();
+    const tasks = await this.getTasksByProjectId(user, task.project.id);
     let userExists = false;
     tasks.forEach(task => {
       task.users.forEach(user => {
