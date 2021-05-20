@@ -113,7 +113,8 @@ export class TaskService {
       task.users.forEach(user => {
         this.emailService.sendTaskUpdateNotification(user.email, task.taskTitle, task.id, task.status, task.project.id);
       });
-      this.emailService.sendTaskUpdateNotification(task.owner.email, task.taskTitle, task.id, task.status, task.project.id);
+      if (task.owner.id !== userId)
+        this.emailService.sendTaskUpdateNotification(task.owner.email, task.taskTitle, task.id, task.status, task.project.id);
     }
     
     return await this.updateProjectCompletion(task.project);
