@@ -19,6 +19,8 @@ import { ProjectService } from 'modules/project/project.service';
 import { TaskService } from 'modules/task/task.service';
 import { CompanyPatchSetActiveStatusDto } from './dto/company.patch.setActiveStatusdto';
 import { CompanyPatchOwnerDto } from './dto/company.patchOwner.dto';
+import { UserRole } from 'modules/common/userRole/userRole.decorator';
+import { UserRolePatchDto } from 'modules/user/dto/userRole.patch.dto';
 
 @Injectable()
 export class CompanyService {
@@ -172,6 +174,11 @@ export class CompanyService {
       .add(owner); 
     }    
     await this.companyRepository.update({ id: companyId }, { owner });
+    if (owner.userRole !== UserRoleEnum.ADMIN) {
+      const userRolePatchDto = new UserRolePatchDto();
+      userRolePatchDto.userRole = UserRoleEnum.MANAGER;
+      await this.userService.patchRole(payload.ownerId, userRolePatchDto);
+    }
     return await this.companyRepository.findOne(companyId, { relations: ['owner'] });
   }
 
