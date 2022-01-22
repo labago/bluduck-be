@@ -107,7 +107,7 @@ export class ProjectService {
     return { status: 200, message: 'Successfully deleted project.'};
   }
 
-  async copy(userId: number, projectId: number): Promise<any> {
+  async copy(userId: number, projectId: number, includeNotes: boolean = false): Promise<any> {
     const project = await this.projectRepository.findOne({ id: projectId }, { relations: ['tasks', 'company'] });
     const company = await this.companyService.getCompanyById(project.company.id);
     const user = await this.userService.get(userId);
@@ -137,7 +137,7 @@ export class ProjectService {
       newTask.projectId = newProject.id;
       newTask.taskTitle = task.taskTitle;
       newTask.date = task.date;
-      newTask.notes = `[{"text": "Task created", "date": "${Date.now()}", "type": "creation", "userId": "${userId}"}]`;
+      newTask.notes = includeNotes ? task.notes : `[{"text": "Task created", "date": "${Date.now()}", "type": "creation", "userId": "${userId}"}]`;
       await this.taskService.create(userId, newTask);
     })
 

@@ -14,4 +14,10 @@ export class ProjectCopyDto {
   })
   @IsNotEmpty()
   projectId: number;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsNotEmpty()
+  includeNotes: boolean;
 }
