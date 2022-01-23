@@ -2,16 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
 export class ProjectCopyDto {
-
   @ApiProperty({
-    required: true,
+    required: false,
   })
   @IsNotEmpty()
-  companyId: number;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsNotEmpty()
-  projectId: number;
+  includeNotes: boolean = false;
 }
