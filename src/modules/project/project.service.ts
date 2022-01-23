@@ -9,6 +9,7 @@ import { User, UserRoleEnum } from 'modules/user/user.entity';
 import { UserService } from 'modules/user/user.service';
 import { TaskService } from 'modules/task/task.service';
 import { TaskCreateDto } from 'modules/task/dto/task.create.dto';
+import { ProjectCopyDto } from './dto/project.copy.dto';
 
 @Injectable()
 export class ProjectService {
@@ -107,12 +108,14 @@ export class ProjectService {
     return { status: 200, message: 'Successfully deleted project.'};
   }
 
-  async copy(userId: number, projectId: number, includeNotes: boolean = false): Promise<any> {
+  async copy(userId: number, projectId: number, payload: ProjectCopyDto): Promise<any> {
     const project = await this.projectRepository.findOne({ id: projectId }, { relations: ['tasks', 'company'] });
     const company = await this.companyService.getCompanyById(project.company.id);
     const user = await this.userService.get(userId);
     const managerFoundInCompany = await company.users.filter(u => u.id === userId);
-    
+    const includeNotes = payload.includeNotes;
+    console.log('include?', includeNotes);
+
     if (company.projects.length >= company.projectLimit || company.projectLimit === 0) {
       throw new BadRequestException(
         'Company has reached its limit of projects created.'

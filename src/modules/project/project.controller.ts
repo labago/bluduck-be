@@ -72,9 +72,9 @@ export class ProjectController {
   @UserRole(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: "Copy a project." })
   @ApiResponse({ status: 201, description: 'Successfully copied a project.' })
-  async copy(@Request() req: any, @Param('id') projectId: number): Promise<any> {
+  async copy(@Request() req: any, @Param('id') projectId: number,  @Body() payload: ProjectCopyDto): Promise<any> {
     const { id } = req.user;
-    return await this.projectService.copy(id, projectId);
+    return await this.projectService.copy(id, projectId, payload);
   }
 }
   
