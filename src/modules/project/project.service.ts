@@ -114,7 +114,8 @@ export class ProjectService {
     const user = await this.userService.get(userId);
     const managerFoundInCompany = await company.users.filter(u => u.id === userId);
     const includeNotes = payload.includeNotes;
-    console.log('include?', includeNotes);
+    const date = new Date();
+    const dateNow = date.toLocaleDateString()
 
     if (company.projects.length >= company.projectLimit || company.projectLimit === 0) {
       throw new BadRequestException(
@@ -140,7 +141,7 @@ export class ProjectService {
       newTask.projectId = newProject.id;
       newTask.taskTitle = task.taskTitle;
       newTask.date = task.date;
-      newTask.notes = includeNotes ? task.notes : `[{"text": "Task created", "date": "${Date.now()}", "type": "creation", "userId": "${userId}"}]`;
+      newTask.notes = includeNotes ? task.notes : `[{"text": "Task created", "date": "${dateNow}", "type": "creation", "userId": "${userId}"}]`;
       await this.taskService.create(userId, newTask);
     })
 
